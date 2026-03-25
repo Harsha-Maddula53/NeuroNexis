@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  password       String
+  dateOfBirth    DateTime
+  gender         String
+  bio            String?
+  profilePhoto   String?
+  aiEnabled      Boolean   @default(true)
+  onlineStatus   Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  
+  // Relations
+  aiIdentity          AIIdentity?
+  behaviorProfile     BehaviorProfile?
+  sentConnections     Connection[]    @relation("SentConnections")
+  receivedConnections Connection[]    @relation("ReceivedConnections")
+  conversations1      Conversation[]  @relation("Conversations1")
+  conversations2      Conversation[]  @relation("Conversations2")
+  messages            Message[]
+  feedbacks           Feedback[]
+  notifications       Notification[]
+}
+
+model AIIdentity {
+  id          String    @id @default(cuid())
+  ownerId     String    @unique
+  aiName      String
+  aiGender    String
+  aiAge       Int
+  isPublic    Boolean   @default(true)
+  phoneNumber String?
+  location    String?
+  deployedAt  DateTime?
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model BehaviorProfile {
+  id                    String   @id @default(cuid())
+  ownerId               String   @unique
+  profession            String
+  tone                  String
+  humorLevel            String
+  responseLength        String
+  emotionalSensitivity  String
+  languages             String
+  disagreementStyle     String
+  ambition              String
+  maritalStatus         String
+  identityTransparency  String
+  updatedAt             DateTime @updatedAt
+  owner                 User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Connection {
+  id          String   @id @default(cuid())
+  requesterId String
+  receiverId  String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  requester   User     @relation("SentConnections", fields: [requesterId], references: [id])
+  receiver    User     @relation("ReceivedConnections", fields: [receiverId], references: [id])
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime  @default(now())
+  participant1  User      @relation("Conversations1", fields: [participant1Id], references: [id])
+  participant2  User      @relation("Conversations2", fields: [participant2Id], references: [id])
+  messages      Message[]
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  senderId        String
+  content         String
+  isAi            Boolean      @default(false)
+  confidenceLevel String?
+  timestamp       DateTime     @default(now())
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  sender          User         @relation(fields: [senderId], references: [id])
+  feedbacks       Feedback[]
+}
+
+model Feedback {
+  id            String   @id @default(cuid())
+  messageId     String
+  ownerId       String
+  feedbackType  String
+  correctedText String?
+  createdAt     DateTime @default(now())
+  message       Message  @relation(fields: [messageId], references: [id])
+  owner         User     @relation(fields: [ownerId], references: [id])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  recipientId String
+  type        String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  recipient   User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+}
