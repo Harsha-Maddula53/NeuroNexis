@@ -1,35 +1,25 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react';
+import React, { InputHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
-  helperText?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', label, error, helperText, ...props }, ref) => {
-    return (
-      <div className="w-full flex flex-col gap-1.5">
-        {label && (
-          <label className="text-sm font-medium text-gray-700">
-            {label}
-          </label>
+export function Input({ className = '', label, ...props }: InputProps) {
+  return (
+    <div className="w-full text-sans">
+      {label && (
+        <label className="block text-[11px] font-medium text-[var(--text-tertiary)] mb-2 ml-1 uppercase tracking-[0.08em]">
+          {label}
+        </label>
+      )}
+      <input
+        className={cn(
+          'w-full bg-[var(--bg-secondary)] border border-[rgba(255,255,255,0.10)] rounded-md h-10 px-4 text-[15px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)]',
+          className
         )}
-        <input
-          className={`flex h-10 w-full rounded-md border ${
-            error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'
-          } bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-          ref={ref}
-          {...props}
-        />
-        {(error || helperText) && (
-          <p className={`text-xs ${error ? 'text-red-500' : 'text-gray-500'}`}>
-            {error || helperText}
-          </p>
-        )}
-      </div>
-    );
-  }
-);
-
-Input.displayName = 'Input';
+        {...props}
+      />
+    </div>
+  );
+}

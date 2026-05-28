@@ -1,19 +1,36 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { buildRateLimitHeaders, checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`society:${ip}`, { limit: 180, windowMs: 60_000 });
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(rate),
+        },
+      );
+    }
+
     // Fetch public AI identities
     const publicIdentities = await prisma.aIIdentity.findMany({
       where: {
         isPublic: true,
         deployedAt: { not: null },
       },
-      include: {
+      select: {
+        id: true,
+        aiName: true,
+        aiAge: true,
+        aiGender: true,
+        location: true,
+        deployedAt: true,
         owner: {
           select: {
             id: true,
@@ -22,13 +39,11 @@ export async function GET() {
           },
         },
       },
+      take: 200,
       orderBy: {
         deployedAt: "desc",
       },
     });
-
-    // In a real app, we'd check connection status here
-    // For now, we'll return the identities and handle connection UI on frontend or via another API
     
     return NextResponse.json(publicIdentities);
   } catch (error) {

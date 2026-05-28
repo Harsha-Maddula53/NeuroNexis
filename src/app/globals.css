@@ -4,52 +4,171 @@
 
 @layer base {
   :root {
-    --color-bg: #ffffff;
-    --color-bg-secondary: #f8f8fa;
-    --color-bg-tertiary: #f1f0f5;
-    
-    --color-purple-50: #faf5ff;
-    --color-purple-100: #f3e8ff;
-    --color-purple-500: #8b5cf6;
-    --color-purple-600: #7c3aed;
-    --color-purple-700: #6d28d9;
-    
-    --color-text-primary: #1a1a2e;
-    --color-text-secondary: #6b7280;
-    --color-text-muted: #9ca3af;
-    
-    --color-border: #e5e7eb;
-    
-    --color-success: #10b981;
+    /* Core palette */
+    --bg-primary: #050505;
+    --bg-secondary: #0a0a0a;
+    --card-bg: rgba(20, 20, 20, 0.7);
+    --border-color: rgba(255, 255, 255, 0.05);
+    --border-hover: rgba(255, 255, 255, 0.12);
+
+    /* Text */
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #52525b;
+
+    /* Accents */
+    --accent-primary: #6366f1;
+    --accent-secondary: #a78bfa;
+    --accent-glow: rgba(99, 102, 241, 0.15);
+    --brand-primary: var(--accent-primary);
+    --brand-primary-hover: #4f46e5;
+
+    /* UI */
+    --radius: 1.25rem; /* 20px */
+    --card-border: var(--border-color);
+
+    /* Status */
+    --color-success: #22c55e;
     --color-warning: #f59e0b;
     --color-danger: #ef4444;
-    
-    --color-ai-badge: #8b5cf6;
 
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* App-specific (kept for compatibility) */
+    --sidebar-bg: #0f0f10;
+    --sidebar-active: rgba(99, 102, 241, 0.12);
+    --sidebar-active-text: var(--accent-primary);
 
-    --background: var(--color-bg);
-    --foreground: var(--color-text-primary);
+    --ai-msg-bg: rgba(99, 102, 241, 0.06);
+    --ai-msg-text: var(--text-primary);
+    --ai-msg-border: rgba(99, 102, 241, 0.18);
+
+    --user-msg-bg: rgba(255, 255, 255, 0.06);
+    --user-msg-text: var(--text-primary);
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    @apply antialiased min-h-screen selection:bg-purple-100 selection:text-purple-700 font-sans;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    @apply antialiased min-h-screen selection:bg-indigo-500/25;
+    font-family: var(--font-sans), Inter, system-ui, sans-serif;
+    text-rendering: geometricPrecision;
+  }
+
+  /* Subtle global grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  }
+
+  /* Make sure app content renders above grain overlay */
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  :focus-visible {
+    outline: none;
+  }
+
+  /* Consistent indigo glow focus */
+  :where(button, a, input, textarea, select, [role="button"], [tabindex]):focus-visible {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
   }
 }
 
 @layer utilities {
-  .bg-bg-secondary { background-color: var(--color-bg-secondary); }
-  .bg-bg-tertiary { background-color: var(--color-bg-tertiary); }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    @apply backdrop-blur-md;
+  }
   
-  .text-secondary { color: var(--color-text-secondary); }
-  .text-muted { color: var(--color-text-muted); }
-  
-  .border-custom { border-color: var(--color-border); }
+  .saas-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  }
+
+  .ai-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] px-3 py-1 rounded-full;
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--accent-primary);
+    border: 1px solid rgba(99, 102, 241, 0.30);
+  }
+
+  .thinking-dot {
+    @apply w-1 h-1 rounded-full animate-bounce;
+    background: var(--accent-primary);
+  }
+
+  .card-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-hover:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Scroll fade-in-up (CSS-only) */
+  .scroll-fade {
+    opacity: 1;
+    transform: none;
+  }
+
+  @supports (animation-timeline: view()) {
+    .scroll-fade {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: scrollFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 30%;
+      will-change: opacity, transform;
+    }
+  }
+}
+
+@keyframes scrollFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
 }

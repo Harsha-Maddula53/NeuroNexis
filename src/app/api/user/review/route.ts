@@ -2,15 +2,26 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
+    const getRate = checkRateLimit(`user:review:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    if (!getRate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(getRate),
+        },
+      );
+    }
 
     // Get messages sent by AI that haven't been reviewed yet
     const pendingReviews = await prisma.message.findMany({
@@ -56,17 +67,67 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
+    const postRate = checkRateLimit(`user:review:post:${userId}`, { limit: 40, windowMs: 60_000 });
+    if (!postRate.success) {
+      return NextResponse.json(
+        { error: "Too many feedback submissions. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(postRate),
+        },
+      );
+    }
+
     const body = await req.json();
 
-    const { messageId, feedbackType, correctedText } = body;
+    const messageId = typeof body.messageId === "string" ? body.messageId.trim() : "";
+    const feedbackType = typeof body.feedbackType === "string" ? body.feedbackType : "";
+    const correctedText = typeof body.correctedText === "string" ? body.correctedText.trim() : null;
 
     if (!messageId || !feedbackType) {
       return new NextResponse("Missing fields", { status: 400 });
+    }
+
+    if (!new Set(["approve", "correct", "reject"]).has(feedbackType)) {
+      return new NextResponse("Invalid feedback type", { status: 400 });
+    }
+
+    if (feedbackType === "correct" && !correctedText) {
+      return new NextResponse("Corrected text is required", { status: 400 });
+    }
+
+    if (correctedText && correctedText.length > 2000) {
+      return new NextResponse("Corrected text is too long", { status: 400 });
+    }
+
+    const targetMessage = await prisma.message.findUnique({
+      where: { id: messageId },
+      select: {
+        id: true,
+        senderId: true,
+        isAi: true,
+      },
+    });
+
+    if (!targetMessage || !targetMessage.isAi || targetMessage.senderId !== userId) {
+      return new NextResponse("Message not eligible for review", { status: 403 });
+    }
+
+    const existingFeedback = await prisma.feedback.findFirst({
+      where: {
+        messageId,
+        ownerId: userId,
+      },
+      select: { id: true },
+    });
+
+    if (existingFeedback) {
+      return new NextResponse("Feedback already submitted", { status: 409 });
     }
 
     const feedback = await prisma.feedback.create({

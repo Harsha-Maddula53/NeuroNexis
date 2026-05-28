@@ -6,11 +6,11 @@ import prisma from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     // Find conversations where the current user is a participant,
     // then fetch AI messages sent on their behalf (senderId != userId but isAi = true)
@@ -55,11 +55,11 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await req.json();
     const { messageId, action, correction } = body;
 

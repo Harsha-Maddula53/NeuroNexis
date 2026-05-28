@@ -2,15 +2,26 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
+    const rate = checkRateLimit(`conversations:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(rate),
+        },
+      );
+    }
 
     const conversations = await prisma.conversation.findMany({
       where: {
@@ -60,32 +71,52 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { recipientId } = await req.json();
-    const userId = (session.user as any).id;
+    const body = await req.json();
+    const recipientId = typeof body.recipientId === "string" ? body.recipientId.trim() : "";
+    const userId = session.user.id;
+
+    const rate = checkRateLimit(`conversations:post:${userId}`, { limit: 30, windowMs: 60_000 });
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(rate),
+        },
+      );
+    }
 
     if (!recipientId) {
       return new NextResponse("Recipient ID required", { status: 400 });
     }
 
+    if (recipientId.length > 100) {
+      return new NextResponse("Recipient ID is invalid", { status: 400 });
+    }
+
+    if (recipientId === userId) {
+      return new NextResponse("Cannot create conversation with yourself", { status: 400 });
+    }
+
+    const orderedParticipantIds = [userId, recipientId].sort();
+
     // Check if conversation already exists
     let conversation = await prisma.conversation.findFirst({
       where: {
-        OR: [
-          { participant1Id: userId, participant2Id: recipientId },
-          { participant1Id: recipientId, participant2Id: userId },
-        ],
+        participant1Id: orderedParticipantIds[0],
+        participant2Id: orderedParticipantIds[1],
       },
     });
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
         data: {
-          participant1Id: userId,
-          participant2Id: recipientId,
+          participant1Id: orderedParticipantIds[0],
+          participant2Id: orderedParticipantIds[1],
         },
       });
     }

@@ -1,8 +1,8 @@
-# NeuroNexis 🧠
+# PersonaSphere (NeuroNexis) 🧠
 
 **Your Personalized AI Representative for the Virtual Society**
 
-NeuroNexis is a state-of-the-art platform that allows you to create, train, and deploy an AI identity (a "clone") that represents you in a virtual networking environment. Your AI can interact, message, and form connections on your behalf when you are offline, following your specific behavioral traits and personality.
+PersonaSphere is a state-of-the-art platform that allows you to create, train, and deploy an AI identity (a "clone") that represents you in a virtual networking environment. Your AI can interact, message, and form connections on your behalf when you are offline, following your specific behavioral traits and personality.
 
 ## 🚀 Key Features
 
@@ -14,15 +14,19 @@ NeuroNexis is a state-of-the-art platform that allows you to create, train, and 
 
 ## 🛠 Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Database**: Supabase (PostgreSQL)
-- **ORM**: Prisma
-- **AI Engine**: Google Gemini AI (gemini-1.5-flash)
-- **Authentication**: NextAuth.js
-- **Styling**: TailwindCSS
+- **Next.js 14** (App Router)
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS** (for styling)
+- **Framer Motion** (for animations)
+- **Prisma** (for database ORM)
+- **PostgreSQL** (via Supabase)
+- **NextAuth.js** (for authentication)
+- **Groq API (`llama-3.1-8b-instant`)** (for AI generation)
 
 ## ⚙️ Setup & Installation
+
+Prerequisite: Node.js 20.19+ and npm 10+.
 
 1. **Clone the repository**:
    ```bash
@@ -42,7 +46,7 @@ NeuroNexis is a state-of-the-art platform that allows you to create, train, and 
    DIRECT_URL="your-supabase-direct-connection-string"
    NEXTAUTH_SECRET="your-secret-key"
    NEXTAUTH_URL="http://localhost:3000"
-   GEMINI_API_KEY="your-google-gemini-api-key"
+   GROQ_API_KEY="your-groq-api-key"
    NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
    NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
    ```
@@ -64,5 +68,5 @@ NeuroNexis is a state-of-the-art platform that allows you to create, train, and 
 
 ---
 
-*NeuroNexis is currently under active development. Some advanced behavioral features and data export options are currently in "Coming Soon" status.*
+*PersonaSphere is currently under active development. Some advanced behavioral features and data export options are currently in "Coming Soon" status.*
 

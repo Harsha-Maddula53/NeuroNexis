@@ -2,8 +2,28 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { 
+  Rocket, 
+  Brain, 
+  ArrowRight, 
+  ShieldCheck, 
+  Zap, 
+  Globe, 
+  MessageSquare, 
+  LayoutDashboard,
+  Terminal,
+  Cpu,
+  Fingerprint,
+  Radio,
+  Sparkles,
+  Check,
+  Target
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function DeployChoicePage() {
   const router = useRouter();
@@ -35,96 +55,152 @@ export default function DeployChoicePage() {
     router.push("/training");
   }
 
+  const steps = [
+    { id: 1, label: "Identity", active: false, completed: true },
+    { id: 2, label: "Behavior", active: false, completed: true },
+    { id: 3, label: "Deploy", active: true, completed: false },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg-secondary p-4">
-      <div className="w-full max-w-4xl">
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-[var(--bg-primary)] overflow-hidden p-6 py-20 font-sans">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-glow-radial" />
+        <div className="absolute inset-0 bg-dot-grid opacity-[0.55]" />
+      </div>
+
+      <div className="w-full max-w-5xl relative z-10">
         
-        {/* Progress Bar */}
-        <div className="mb-12 flex justify-center items-center gap-2">
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">1</div>
-            <span className="text-xs font-semibold text-purple-700">Identity</span>
-          </div>
-          <div className="h-1 w-16 bg-purple-600"></div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-            <span className="text-xs font-semibold text-purple-700">Behavior</span>
-          </div>
-          <div className="h-1 w-16 bg-purple-600"></div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">3</div>
-            <span className="text-xs font-semibold text-purple-700">Deploy</span>
-          </div>
+        {/* Progress Tracker */}
+        <div className="mb-20 flex justify-between items-center px-4 relative max-w-md mx-auto">
+          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white/10 -z-10" />
+          {steps.map((step) => (
+            <div key={step.id} className="flex flex-col items-center gap-3 bg-[var(--bg-primary)] px-2 rounded-full">
+              <div className={cn(
+                "h-8 w-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300",
+                step.active 
+                  ? "bg-indigo-500 border-indigo-400 text-white shadow-glow scale-110" 
+                  : step.completed 
+                    ? "bg-emerald-500 border-emerald-400 text-white" 
+                    : "bg-white/5 border-white/10 text-[var(--text-tertiary)]"
+              )}>
+                {step.completed ? <Check size={14} /> : step.id}
+              </div>
+              <span className={cn(
+                "text-[10px] font-bold uppercase tracking-widest",
+                step.active ? "text-indigo-200" : "text-[var(--text-tertiary)]"
+              )}>{step.label}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Your AI is Ready.</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Your representation has been generated based on your identity and behavior parameters. What would you like to do next?
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <div className="flex justify-center mb-10">
+            <div className="h-16 w-16 bg-indigo-500 rounded-2xl flex items-center justify-center shadow-glow text-white">
+              <Sparkles size={32} />
+            </div>
+          </div>
+          <h1 className="text-5xl font-bold text-[var(--text-primary)] mb-6 tracking-tight">
+            Ready to <span className="text-indigo-300">launch.</span>
+          </h1>
+          <p className="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed font-medium">
+            Your AI profile is now ready to represent you in NeuroNexis. Choose how you want to start.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           
           {/* Deploy Option */}
-          <Card className={`border-2 transition-all ${isLoading === 'deploy' ? 'border-purple-500 shadow-md ring-4 ring-purple-100' : 'border-transparent hover:border-purple-200 hover:shadow-md'}`}>
-            <CardHeader className="text-center pb-4">
-              <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white mb-4 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m19 12-7-7-7 7"/></svg>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="p-8 h-full flex flex-col group transition-all duration-500">
+              <div className="h-14 w-14 bg-indigo-500 rounded-xl flex items-center justify-center text-white mb-8 group-hover:scale-110 transition-transform shadow-glow">
+                <Rocket size={28} />
               </div>
-              <CardTitle className="text-2xl font-bold">Deploy to Society</CardTitle>
-              <CardDescription className="text-base mt-2">
-                Release your AI immediately. It will start responding on your behalf based on your defined parameters right away.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center pt-4">
+              <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-3">Launch to Market</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-10 leading-relaxed flex-grow">
+                Make your AI public in the Society discovery marketplace. It will start interacting and learning from the community immediately.
+              </p>
               <Button 
-                size="lg" 
-                className="w-[80%]" 
-                onClick={onDeploy} 
+                onClick={onDeploy}
                 disabled={isLoading !== null}
+                fullWidth
+                className="h-14 font-semibold text-base shadow-glow group"
               >
-                {isLoading === 'deploy' ? 'Deploying...' : 'Deploy Now'}
+                {isLoading === 'deploy' ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    <span>Launching...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span>Go Live Now</span>
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
               </Button>
-            </CardContent>
-          </Card>
+            </Card>
+          </motion.div>
 
           {/* Train Option */}
-          <Card className={`border-2 transition-all ${isLoading === 'train' ? 'border-purple-500 shadow-md ring-4 ring-purple-100' : 'border-transparent hover:border-purple-200 hover:shadow-md'}`}>
-            <CardHeader className="text-center pb-4">
-              <div className="mx-auto h-16 w-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 mb-4 shadow-sm border border-purple-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l2-9 5 18 3-10 4 4"/><path d="M22 12h-2l-2-4-2 10-3-18-5 13H2"/></svg>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="p-8 h-full flex flex-col group transition-all duration-500">
+              <div className="h-14 w-14 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-[var(--text-tertiary)] mb-8 group-hover:scale-110 transition-transform group-hover:text-[var(--text-primary)]">
+                <Target size={28} />
               </div>
-              <CardTitle className="text-2xl font-bold">Test & Train Mode</CardTitle>
-              <CardDescription className="text-base mt-2">
-                Enter a private chat session with your AI. See how it responds to various questions before releasing it to the public.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center pt-4">
+              <h3 className="text-xl font-bold text-white mb-3">Personal Training</h3>
+              <p className="text-sm text-zinc-500 mb-10 leading-relaxed flex-grow">
+                Enter an interactive sandbox to test and refine your AI&apos;s response patterns in a private environment before going public.
+              </p>
               <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-[80%] border-purple-200 text-purple-700 hover:bg-purple-50" 
-                onClick={onTrain} 
+                variant="outline"
+                onClick={onTrain}
                 disabled={isLoading !== null}
+                fullWidth
+                className="h-14 font-bold text-base border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 group"
               >
-                {isLoading === 'train' ? 'Loading Chat...' : 'Test AI Responses'}
+                {isLoading === 'train' ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-zinc-400 border-t-zinc-100 rounded-full animate-spin" />
+                    <span>Preparing...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span>Start Training</span>
+                    <MessageSquare size={18} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
               </Button>
-            </CardContent>
-          </Card>
+            </Card>
+          </motion.div>
 
         </div>
 
         {/* Skip to Dashboard Option */}
-        <div className="mt-12 flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
-          <Button 
-            variant="ghost" 
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-16 flex justify-center"
+        >
+          <button 
             onClick={() => router.push("/dashboard")}
-            className="text-gray-500 hover:text-purple-700 font-medium transition-colors hover:bg-purple-50 px-6 py-2 rounded-full"
+            className="flex items-center gap-2 text-[10px] font-bold text-zinc-600 hover:text-zinc-400 uppercase tracking-[0.2em] transition-colors p-4 group"
           >
-            Skip for now & Go to Dashboard
-          </Button>
-        </div>
+            <LayoutDashboard size={14} className="group-hover:rotate-12 transition-transform" />
+            <span>Skip to Dashboard</span>
+          </button>
+        </motion.div>
       </div>
     </div>
   );

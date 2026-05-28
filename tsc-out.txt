@@ -1,0 +1,114 @@
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/behavior/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/chat/[id]/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/chat/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/connections/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/dashboard/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/notifications/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/review/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/settings/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/(app)/society/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/behavior/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/deploy/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/identity/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/respond/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/review/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/ai/train/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/auth/[...nextauth]/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/auth/register/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/chat/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/connections/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/conversations/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/dashboard/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/notifications/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/society/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/behavior/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/delete/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/export/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/profile/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/reset/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/api/user/review/route.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/layout.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/login/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/register/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/setup/behavior/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/setup/deploy/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/setup/identity/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+error TS6053: File 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/.next/types/app/training/page.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in 'C:/Users/maddu/OneDrive/Desktop/NeuroNexis/tsconfig.json'
+
+
+STDERR:

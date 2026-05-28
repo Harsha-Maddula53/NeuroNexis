@@ -1,23 +1,65 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
+    const rate = checkRateLimit(`dashboard:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(rate),
+        },
+      );
+    }
 
     // Get user stats
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        aiIdentity: true,
-        behaviorProfile: true,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        profilePhoto: true,
+        aiEnabled: true,
+        aiIdentity: {
+          select: {
+            id: true,
+            aiName: true,
+            aiAge: true,
+            aiGender: true,
+            isPublic: true,
+            location: true,
+            deployedAt: true,
+          },
+        },
+        behaviorProfile: {
+          select: {
+            profession: true,
+            tone: true,
+            humorLevel: true,
+            responseLength: true,
+            emotionalSensitivity: true,
+            languages: true,
+            disagreementStyle: true,
+            ambition: true,
+            maritalStatus: true,
+            identityTransparency: true,
+            mood: true,
+            updatedAt: true,
+          },
+        },
         _count: {
           select: {
             messages: true,
@@ -33,7 +75,7 @@ export async function GET() {
     }
 
     // Get recent AI activity (messages sent by AI on behalf of user)
-    const recentActivity = await prisma.message.findMany({
+    const recentActivityRaw = await prisma.message.findMany({
       where: {
         senderId: userId,
         isAi: true,
@@ -48,6 +90,18 @@ export async function GET() {
       },
       orderBy: { timestamp: "desc" },
       take: 5,
+    });
+
+    const recentActivity = recentActivityRaw.map((message) => {
+      const targetName =
+        message.conversation.participant1Id === userId
+          ? message.conversation.participant2.name
+          : message.conversation.participant1.name;
+
+      return {
+        ...message,
+        targetName,
+      };
     });
 
     // Actual network stats

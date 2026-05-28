@@ -1,53 +1,51 @@
-import React, { HTMLAttributes } from 'react';
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {}
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  hoverable?: boolean;
+}
 
-export function Card({ className = '', children, ...props }: CardProps) {
+export function Card({ children, className = '', onClick, hoverable = false }: CardProps) {
   return (
-    <div 
-      className={`rounded-xl border border-gray-200 bg-white text-gray-950 shadow-sm ${className}`} 
-      {...props}
+    <motion.div
+      whileHover={hoverable ? { y: -2, borderColor: 'rgba(255, 255, 255, 0.15)' } : {}}
+      onClick={onClick}
+      className={cn(
+        'bg-[var(--card-bg)] border border-[var(--border-color)] rounded-[var(--radius)] overflow-hidden transition-all duration-500 shadow-card backdrop-blur-xl',
+        onClick || hoverable
+          ? 'cursor-pointer hover:shadow-card-hover hover:border-[rgba(255,255,255,0.12)] hover:-translate-y-1'
+          : '',
+        className
+      )}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
-export function CardHeader({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function CardHeader({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+    <div className={cn('p-6 border-b border-white/10', className)}>
       {children}
     </div>
   );
 }
 
-export function CardTitle({ className = '', children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+export function CardContent({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <h3 className={`font-semibold leading-none tracking-tight ${className}`} {...props}>
-      {children}
-    </h3>
-  );
-}
-
-export function CardDescription({ className = '', children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p className={`text-sm text-gray-500 ${className}`} {...props}>
-      {children}
-    </p>
-  );
-}
-
-export function CardContent({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`p-6 pt-0 ${className}`} {...props}>
+    <div className={cn('p-6', className)}>
       {children}
     </div>
   );
 }
 
-export function CardFooter({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function CardFooter({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex items-center p-6 pt-0 ${className}`} {...props}>
+    <div className={cn('p-6 border-t border-white/10 bg-[rgba(10,10,10,0.35)]', className)}>
       {children}
     </div>
   );

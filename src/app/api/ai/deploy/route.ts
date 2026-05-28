@@ -6,11 +6,11 @@ import prisma from "@/lib/prisma";
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     // Support optional `force` flag from setup flow
     let force: boolean | undefined;
@@ -23,37 +23,34 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: { aiIdentity: true },
     });
 
     if (!user) {
       return new NextResponse("User not found", { status: 404 });
     }
 
-    // If force is explicitly true, always enable. Otherwise toggle.
     const newAiEnabled = force === true ? true : !user.aiEnabled;
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { aiEnabled: newAiEnabled },
-    });
-
-    // Check if identity exists first
-    const identity = await prisma.aIIdentity.findUnique({
-      where: { ownerId: userId },
-    });
-
-    if (!identity && newAiEnabled) {
+    if (!user.aiIdentity && newAiEnabled) {
       return new NextResponse("AI Identity not found. Please complete setup.", { status: 400 });
     }
 
-    if (identity) {
-      await prisma.aIIdentity.update({
-        where: { ownerId: userId },
-        data: {
-          deployedAt: newAiEnabled ? new Date() : null,
-        },
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: { aiEnabled: newAiEnabled },
       });
-    }
+
+      if (user.aiIdentity) {
+        await tx.aIIdentity.update({
+          where: { ownerId: userId },
+          data: {
+            deployedAt: newAiEnabled ? new Date() : null,
+          },
+        });
+      }
+    });
 
     return NextResponse.json({ aiEnabled: newAiEnabled });
   } catch (error) {

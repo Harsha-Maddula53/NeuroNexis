@@ -2,15 +2,31 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
+
+function normalizeText(value: unknown, maxLength = 120): string {
+  return String(value ?? "").trim().slice(0, maxLength);
+}
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
+    const getRate = checkRateLimit(`ai:behavior:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    if (!getRate.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(getRate),
+        },
+      );
+    }
+
     const behaviorProfile = await prisma.behaviorProfile.findUnique({
       where: { ownerId: userId },
     });
@@ -25,22 +41,97 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const userId = session.user.id;
+    const postRate = checkRateLimit(`ai:behavior:post:${userId}`, { limit: 20, windowMs: 60_000 });
+    if (!postRate.success) {
+      return NextResponse.json(
+        { error: "Too many updates. Please try again later." },
+        {
+          status: 429,
+          headers: buildRateLimitHeaders(postRate),
+        },
+      );
+    }
+
     const body = await req.json();
-    const userId = (session.user as any).id;
+
+    const profession = normalizeText(body.profession, 120);
+    const tone = normalizeText(body.tone, 60);
+    const humorLevel = normalizeText(body.humorLevel, 40);
+    const responseLength = normalizeText(body.responseLength, 40);
+    const emotionalSensitivity = normalizeText(body.emotionalSensitivity, 40);
+    const languages = normalizeText(body.languages, 120);
+    const disagreementStyle = normalizeText(body.disagreementStyle, 40);
+    const ambition = normalizeText(body.ambition, 120);
+    const maritalStatus = normalizeText(body.maritalStatus, 60);
+    const identityTransparency = normalizeText(body.identityTransparency, 40);
+    const mood = normalizeText(body.mood || "Professional", 60);
+
+    if (
+      !profession ||
+      !tone ||
+      !humorLevel ||
+      !responseLength ||
+      !emotionalSensitivity ||
+      !languages ||
+      !disagreementStyle ||
+      !ambition ||
+      !maritalStatus ||
+      !identityTransparency
+    ) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
+    const allowedTones = new Set(["Casual", "Formal", "Professional", "Friendly"]);
+    const allowedHumor = new Set(["None", "Light", "Moderate", "Frequent"]);
+    const allowedResponseLength = new Set(["Short", "Medium", "Detailed"]);
+    const allowedSensitivity = new Set(["Low", "Medium", "High"]);
+    const allowedDisagreement = new Set(["Diplomatic", "Assertive", "Avoidant"]);
+    const allowedTransparency = new Set(["Always", "Often", "Rarely", "Never"]);
+
+    if (
+      !allowedTones.has(tone) ||
+      !allowedHumor.has(humorLevel) ||
+      !allowedResponseLength.has(responseLength) ||
+      !allowedSensitivity.has(emotionalSensitivity) ||
+      !allowedDisagreement.has(disagreementStyle) ||
+      !allowedTransparency.has(identityTransparency)
+    ) {
+      return new NextResponse("Invalid behavior profile values", { status: 400 });
+    }
 
     const behaviorProfile = await prisma.behaviorProfile.upsert({
       where: { ownerId: userId },
       update: {
-        ...body,
-        ownerId: undefined, // Don't try to update ownerId
+        profession,
+        tone,
+        humorLevel,
+        responseLength,
+        emotionalSensitivity,
+        languages,
+        disagreementStyle,
+        ambition,
+        maritalStatus,
+        identityTransparency,
+        mood,
       },
       create: {
-        ...body,
         ownerId: userId,
+        profession,
+        tone,
+        humorLevel,
+        responseLength,
+        emotionalSensitivity,
+        languages,
+        disagreementStyle,
+        ambition,
+        maritalStatus,
+        identityTransparency,
+        mood,
       },
     });
 
