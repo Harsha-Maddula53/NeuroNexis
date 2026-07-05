@@ -86,7 +86,7 @@ const config: Config = {
         },
         ".bg-glow-radial": {
           backgroundImage:
-            "radial-gradient(800px 400px at 50% 0%, rgba(99,102,241,0.14), transparent 65%), radial-gradient(600px 300px at 20% 10%, rgba(167,139,250,0.10), transparent 60%)",
+            "radial-gradient(800px 400px at 50% 0%, rgba(99,102,241,0.14), transparent 65%), radial-gradient(600px 300px at 20% 10%, rgba(168,85,247,0.10), transparent 60%)",
         },
         ".grain-overlay": {
           position: "relative",

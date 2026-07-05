@@ -1,8 +1,8 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { buildSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL } from "@/lib/ai";
+import { buildTrainingSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL, getRelevantContext, habituateUserIdentity } from "@/lib/ai";
 import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 // GET handler remains unchanged...
@@ -149,13 +149,15 @@ export async function POST(req: NextRequest) {
     const chronologicalMessages = recentMessages.reverse();
 
     // 4. Build Groq Stream
-    const systemPrompt = buildSystemPrompt(user, user.name + " (Training)");
+    const systemPromptText = buildTrainingSystemPrompt(user);
+    const ragContext = await getRelevantContext(userId, userMessage, conversationId);
+    const finalSystemPrompt = systemPromptText + ragContext;
     const conversationContents = chronologicalMessages.map((m) => ({
       role: m.isAi ? 'assistant' : 'user',
       content: m.content,
     }));
 
-    conversationContents.unshift({ role: 'system', content: systemPrompt });
+    conversationContents.unshift({ role: 'system', content: finalSystemPrompt });
 
     if (conversationContents.length === 1 || conversationContents[conversationContents.length - 1].role !== 'user') {
       conversationContents.push({ role: 'user', content: userMessage });
@@ -257,6 +259,12 @@ export async function POST(req: NextRequest) {
             where: { id: conversationId },
             data: { lastMessageAt: new Date() },
           });
+
+          // Trigger Habituation learning loop to learn from this interaction
+          habituateUserIdentity(userId, 'chat', {
+            userMessage,
+            aiResponse: content
+          }).catch(err => console.error("Habituation error (chat):", err));
 
         } catch (err) {
           console.error("Stream error:", err);

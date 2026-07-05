@@ -12,18 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="grid grid-cols-[auto,1fr] h-screen overflow-hidden bg-background font-sans selection:bg-indigo-500/25">
       <Sidebar />
       <main className="relative overflow-y-auto overflow-x-hidden border-l border-white/10 bg-[var(--bg-primary)]">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="h-full"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {children}
       </main>
     </div>
   );

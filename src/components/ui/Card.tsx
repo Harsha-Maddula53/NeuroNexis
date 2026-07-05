@@ -17,7 +17,7 @@ export function Card({ children, className = '', onClick, hoverable = false }: C
       className={cn(
         'bg-[var(--card-bg)] border border-[var(--border-color)] rounded-[var(--radius)] overflow-hidden transition-all duration-500 shadow-card backdrop-blur-xl',
         onClick || hoverable
-          ? 'cursor-pointer hover:shadow-card-hover hover:border-[rgba(255,255,255,0.12)] hover:-translate-y-1'
+          ? 'cursor-pointer hover:shadow-[0_8px_32px_rgba(0,0,0,0.5),_0_0_20px_rgba(239,68,68,0.15)] hover:border-[rgba(239,68,68,0.3)] hover:-translate-y-1'
           : '',
         className
       )}

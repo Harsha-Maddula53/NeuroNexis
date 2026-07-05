@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { buildSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL } from "@/lib/ai";
+import { buildSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL, getRelevantContext } from "@/lib/ai";
 import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
@@ -100,6 +100,10 @@ export async function POST(req: NextRequest) {
       include: { sender: { select: { name: true } } },
     });
 
+    const lastUserMessage = recentMessages[0]?.content || "";
+    const ragContext = await getRelevantContext(recipientId, lastUserMessage, conversationId);
+    const finalSystemPrompt = systemPromptText + ragContext;
+
     // Build multi-turn conversation in Groq (OpenAI) native format
     const conversationContents = recentMessages.reverse().map((message) => ({
       role: message.isAi ? 'assistant' : 'user',
@@ -107,7 +111,7 @@ export async function POST(req: NextRequest) {
     }));
 
     // Add current context/system message manually. Groq supports "system" roles.
-    conversationContents.unshift({ role: 'system', content: systemPromptText });
+    conversationContents.unshift({ role: 'system', content: finalSystemPrompt });
 
     const groqBody = JSON.stringify({
       model: "llama-3.1-8b-instant", // Using Groq's insanely fast LLAMA 3 model

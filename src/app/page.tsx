@@ -6,29 +6,19 @@ import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
   Shield, 
-  Zap, 
   Users, 
-  Cpu, 
   Globe, 
-  MessageSquare, 
-  Sparkles,
-  Search,
-  CheckCircle2,
   Network,
-  Terminal,
-  Activity,
-  Fingerprint,
-  Radio,
-  Lock,
-  Star,
-  Layers,
-  Heart
+  Radio
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { cn } from '@/lib/utils';
 import { Logo } from '@/components/brand/Logo';
+import { HowItWorksStepCard } from '@/components/home/HowItWorksStepCard';
+import { HeroFloatingCard } from '@/components/home/HeroFloatingCard';
+import { FeatureCapabilityCard } from '@/components/home/FeatureCapabilityCard';
+import { HomePageSpotlight } from '@/components/home/HomePageSpotlight';
+import { SpotlightCard } from '@/components/home/SpotlightCard';
 
 export default function Home() {
   const features = [
@@ -60,6 +50,7 @@ export default function Home() {
   ];
 
   return (
+    <HomePageSpotlight>
     <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] font-sans text-[var(--text-primary)] selection:bg-indigo-500/25">
       {/* Atmosphere */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -118,10 +109,10 @@ export default function Home() {
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[rgba(99,102,241,0.30)] bg-[rgba(99,102,241,0.08)] text-indigo-300 text-xs font-medium uppercase tracking-[0.08em] mb-10">
-                <span className="text-indigo-300">✦</span>
-                <span>AI-powered platform</span>
+                <span className="pulse-dot" />
+                <span>AI-POWERED PLATFORM</span>
                 <span className="mx-1 h-3 w-px bg-white/10" />
-                <Badge variant="ai">v2.0 beta</Badge>
+                <Badge variant="ai">v2.0 Beta</Badge>
               </div>
               
               <h1 className="text-balance text-[56px] md:text-[84px] lg:text-[96px] font-extrabold text-[var(--text-primary)] mb-8 tracking-[-0.04em] leading-[0.95] max-w-5xl mx-auto">
@@ -139,12 +130,12 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <Link href="/register">
                   <Button size="lg" className="h-[52px] px-8 text-[15px] font-semibold">
-                    Start building <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    Start Building <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
                 <Link href="/login">
-                  <Button variant="ghost" size="lg" className="h-[52px] px-8 text-[15px] font-semibold">
-                    View demo
+                  <Button variant="secondary" size="lg" className="h-[52px] px-8 text-[15px] font-semibold">
+                    View Demo
                   </Button>
                 </Link>
               </div>
@@ -153,33 +144,30 @@ export default function Home() {
               <div className="mt-16 relative mx-auto max-w-4xl">
                 <div className="absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-[90px]" />
                 <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                  <div className="glass-panel card-hover p-8 md:p-10 rounded-[var(--radius)] rotate-[-2deg] md:translate-y-4 hover:rotate-0 transition-all duration-500">
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-[0_0_12px_rgba(16,185,129,0.6)]" />
-                      <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">Presence</span>
-                    </div>
-                    <div className="text-[15px] text-[var(--text-secondary)] leading-relaxed">
-                      Your twin maintains context, tone, and boundaries—always on‑brand.
-                    </div>
-                  </div>
-                  <div className="glass-panel card-hover p-8 md:p-10 rounded-[var(--radius)] rotate-[1.5deg] hover:rotate-0 transition-all duration-500">
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">Assist</span>
-                      <Badge variant="ai">✦ AI</Badge>
-                    </div>
-                    <div className="text-[15px] text-[var(--text-secondary)] leading-relaxed">
-                      Draft replies, summarize threads, and keep your social graph warm.
-                    </div>
-                  </div>
-                  <div className="glass-panel card-hover p-8 md:p-10 rounded-[var(--radius)] rotate-[-1deg] md:-translate-y-4 hover:rotate-0 transition-all duration-500">
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="h-3 w-3 rounded-full bg-indigo-400/80 shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
-                      <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">Control</span>
-                    </div>
-                    <div className="text-[15px] text-[var(--text-secondary)] leading-relaxed">
-                      Tune behavior, review outputs, and keep sovereignty over your data.
-                    </div>
-                  </div>
+                  <HeroFloatingCard
+                    index={0}
+                    title="Presence"
+                    accent="indigo"
+                    initialRotate="rotate-[-2deg]"
+                    initialTranslate="md:translate-y-4"
+                    description="Your twin maintains context, tone, and boundaries—always on‑brand."
+                  />
+                  <HeroFloatingCard
+                    index={1}
+                    title="Assist"
+                    accent="indigo"
+                    initialRotate="rotate-[1.5deg]"
+                    showAiBadge
+                    description="Draft replies, summarize threads, and keep your social graph warm."
+                  />
+                  <HeroFloatingCard
+                    index={2}
+                    title="Control"
+                    accent="purple"
+                    initialRotate="rotate-[-1deg]"
+                    initialTranslate="md:-translate-y-4"
+                    description="Tune behavior, review outputs, and keep sovereignty over your data."
+                  />
                 </div>
               </div>
 
@@ -213,66 +201,66 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {features.map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <Card hoverable className="p-8 group h-full">
-                    <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-300 mb-8 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                      {feature.icon as React.ReactElement}
-                    </div>
-                    <Badge variant="outline" className="mb-3 text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{feature.label}</Badge>
-                    <h4 className="text-[20px] font-semibold text-[var(--text-primary)] mb-3 tracking-tight">{feature.title}</h4>
-                    <p className="text-[var(--text-secondary)] leading-relaxed text-[15px]">{feature.description}</p>
-                  </Card>
-                </motion.div>
+                <FeatureCapabilityCard
+                  key={feature.title}
+                  icon={feature.icon}
+                  label={feature.label}
+                  title={feature.title}
+                  description={feature.description}
+                  index={i}
+                />
               ))}
             </div>
           </div>
         </section>
 
-        {/* Big Preview Section */}
-        <section id="how-it-works" className="px-6 py-[120px] overflow-hidden">
+        {/* How it works */}
+        <section id="how-it-works" className="px-6 py-[120px]">
           <div className="mx-auto max-w-[1200px]">
-            <div className="relative p-[1px] rounded-[32px] bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent)] shadow-card">
-              <div className="bg-[var(--bg-secondary)] rounded-[31px] overflow-hidden border border-white/10 relative aspect-video flex items-center justify-center">
-                 <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_50%_50%,rgba(99,102,241,0.18),transparent_65%)]" />
-                 
-                 {/* Decorative UI elements representing the app */}
-                 <div className="relative z-10 w-full h-full flex items-center justify-center">
-                    <motion.div 
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 1 }}
-                      className="w-3/4 h-3/4 glass-panel rounded-2xl flex flex-col overflow-hidden border border-white/10"
-                    >
-                        <div className="h-12 border-b border-white/10 bg-white/5 flex items-center px-4 gap-2">
-                           <div className="h-3 w-3 rounded-full bg-red-500/50" />
-                           <div className="h-3 w-3 rounded-full bg-amber-500/50" />
-                           <div className="h-3 w-3 rounded-full bg-emerald-500/50" />
-                        </div>
-                        <div className="flex-1 flex items-center justify-center">
-                           <div className="flex flex-col items-center gap-6">
-                              <div className="h-24 w-24 rounded-full bg-indigo-500 shadow-glow flex items-center justify-center">
-                                 <Sparkles size={40} className="text-white" />
-                              </div>
-                              <h3 className="text-2xl font-semibold text-[var(--text-primary)]">AI syncing…</h3>
-                              <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                 <motion.div 
-                                   initial={{ width: 0 }}
-                                   whileInView={{ width: "75%" }}
-                                   transition={{ duration: 2, delay: 0.5 }}
-                                   className="h-full bg-indigo-500"
-                                 />
-                              </div>
-                           </div>
-                        </div>
-                    </motion.div>
-                 </div>
-              </div>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <Badge variant="ai" className="mb-4">How it works</Badge>
+              <h2 className="text-[40px] md:text-[48px] font-bold text-[var(--text-primary)] tracking-[-0.03em] leading-[1.05]">
+                Three steps to your AI twin
+              </h2>
+              <p className="mt-4 text-[var(--text-secondary)] text-[16px] leading-relaxed">
+                No fake loading screens—just a clear path from signup to a deployed representative.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  step: "01",
+                  title: "Create your account",
+                  description: "Sign up and set your profile. Your data stays under your control from day one.",
+                },
+                {
+                  step: "02",
+                  title: "Train your AI",
+                  description: "Define identity, tone, and behavior so your twin sounds like you—not a generic bot.",
+                },
+                {
+                  step: "03",
+                  title: "Deploy to Society",
+                  description: "Launch your twin to chat, connect, and stay present while you focus on what matters.",
+                },
+              ].map((item, i) => (
+                <HowItWorksStepCard
+                  key={item.step}
+                  step={item.step}
+                  title={item.title}
+                  description={item.description}
+                  index={i}
+                />
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <Link href="/register">
+                <Button size="lg" className="h-12 px-8">
+                  Get started <ArrowRight size={18} className="ml-2" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -280,12 +268,20 @@ export default function Home() {
         {/* Stats Section */}
         <section id="stats" className="px-6 py-[96px] border-y border-white/10">
           <div className="mx-auto max-w-[1200px]">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {stats.map((stat, i) => (
-                <div key={i}>
-                  <p className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">{stat.value}</p>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{stat.label}</p>
-                </div>
+                <SpotlightCard
+                  key={stat.label}
+                  index={i}
+                  innerClassName="p-8 flex flex-col items-center justify-center text-center"
+                >
+                  <p className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-2 tracking-tight transition-colors duration-300 group-hover:text-white">
+                    {stat.value}
+                  </p>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)] transition-colors duration-300 group-hover:text-blue-300/80">
+                    {stat.label}
+                  </p>
+                </SpotlightCard>
               ))}
             </div>
           </div>
@@ -294,11 +290,15 @@ export default function Home() {
         {/* CTA Section */}
         <section className="px-6 py-[120px] md:py-[140px] relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[520px] bg-[radial-gradient(900px_440px_at_50%_50%,rgba(167,139,250,0.10),transparent_65%)]" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[520px] bg-[radial-gradient(900px_440px_at_50%_50%,rgba(168,85,247,0.15),transparent_65%)]" />
           </div>
-          <div className="mx-auto max-w-[1200px] text-center max-w-4xl relative z-10">
+          <SpotlightCard
+            className="mx-auto max-w-4xl"
+            innerClassName="p-12 md:p-16 text-center items-center"
+            lift={false}
+          >
             <Badge variant="ai" className="mb-8">Start your journey</Badge>
-            <h2 className="text-[44px] md:text-[72px] font-bold text-[var(--text-primary)] leading-[0.98] tracking-[-0.04em] mb-10">
+            <h2 className="text-[44px] md:text-[72px] font-bold text-[var(--text-primary)] leading-[0.98] tracking-[-0.04em] mb-10 transition-colors duration-300 group-hover:text-white">
               Scale yourself <br /> beyond the physical.
             </h2>
             <Link href="/register">
@@ -306,7 +306,7 @@ export default function Home() {
                 Claim your NeuroNexis <ArrowRight size={18} className="ml-3" />
               </Button>
             </Link>
-          </div>
+          </SpotlightCard>
         </section>
       </main>
 
@@ -353,7 +353,7 @@ export default function Home() {
              <h4 className="font-medium mb-6 text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">Newsletter</h4>
              <p className="text-xs text-[var(--text-secondary)] mb-4">Stay updated with AI breakthroughs.</p>
              <div className="flex gap-2">
-                <input type="text" placeholder="Email" className="flex-1 bg-[var(--bg-secondary)] border border-white/10 rounded-md px-3 py-2 text-xs outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)]" />
+                <input suppressHydrationWarning type="text" placeholder="Email" className="flex-1 bg-[var(--bg-secondary)] border border-white/10 rounded-md px-3 py-2 text-xs outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)]" />
                 <Button size="sm" className="h-9 px-3">Join</Button>
              </div>
           </div>
@@ -370,6 +370,7 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </HomePageSpotlight>
   );
 }
 

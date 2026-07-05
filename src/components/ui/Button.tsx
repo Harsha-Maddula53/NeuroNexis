@@ -24,7 +24,7 @@ export function Button({
   
   const variants = {
     primary:
-      'bg-indigo-500 text-white border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-indigo-400 hover:shadow-[0_0_20px_rgba(99,102,241,0.3),inset_0_1px_0_rgba(255,255,255,0.3)]',
+      'bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:from-indigo-400 hover:to-purple-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]',
     secondary:
       'bg-[rgba(255,255,255,0.03)] text-[var(--text-primary)] border-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.1)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]',
     outline:

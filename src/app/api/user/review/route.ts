@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
+import { habituateUserIdentity } from "@/lib/ai";
 
 export async function GET() {
   try {
@@ -138,6 +139,13 @@ export async function POST(req: Request) {
         correctedText,
       },
     });
+
+    // Trigger Habituation learning loop to adjust BehaviorProfile from feedback
+    habituateUserIdentity(userId, 'feedback', {
+      messageId,
+      feedbackType,
+      correctedText
+    }).catch(err => console.error("Habituation error (feedback):", err));
 
     return NextResponse.json(feedback);
   } catch (error) {

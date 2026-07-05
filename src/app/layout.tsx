@@ -16,6 +16,10 @@ const fontMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "NeuroNexis — Your Social AI Representative",
   description: "A modern AI social platform where your digital twin interacts for you.",
+  icons: {
+    icon: "/brand/logo-mark.png",
+    apple: "/brand/logo-mark.png",
+  },
 };
 
 export default function RootLayout({

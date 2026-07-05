@@ -1,17 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 type LogoSize = "sm" | "md" | "lg";
 
-const sizes: Record<
-  LogoSize,
-  { mark: string; letter: string; word: string; gap: string }
-> = {
-  sm: { mark: "h-8 w-8", letter: "text-lg", word: "text-[15px]", gap: "gap-3" },
-  md: { mark: "h-9 w-9", letter: "text-xl", word: "text-[15px]", gap: "gap-3" },
-  lg: { mark: "h-16 w-16", letter: "text-3xl", word: "text-xl", gap: "gap-4" },
+const sizes: Record<LogoSize, { mark: number; word: string; gap: string }> = {
+  sm: { mark: 32, word: "text-[15px]", gap: "gap-3" },
+  md: { mark: 36, word: "text-[15px]", gap: "gap-3" },
+  lg: { mark: 64, word: "text-xl", gap: "gap-4" },
 };
 
+/**
+ * Icon mark — one diagonal gradient (white top-left → blue bottom-right) on all
+ * strokes, matching the blue reference. Structure from the B&W reference:
+ * full left leg, fading diagonal, shorter right leg.
+ */
 export function LogoMark({
   size = "sm",
   className,
@@ -20,30 +25,61 @@ export function LogoMark({
   className?: string;
 }) {
   const s = sizes[size];
+  const uid = useId().replace(/:/g, "");
+  const nGrad = `n-grad-${uid}`;
 
   return (
-    <div
-      className={cn(
-        s.mark,
-        "relative shrink-0 rounded-xl overflow-hidden",
-        "bg-black border border-blue-500/45",
-        "shadow-[0_0_18px_rgba(37,99,235,0.22),inset_0_1px_0_rgba(59,130,246,0.15)]",
-        className
-      )}
+    <svg
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("shrink-0", className)}
+      width={s.mark}
+      height={s.mark}
       aria-hidden
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/70 via-blue-500/25 to-transparent" />
-      <div className="absolute bottom-0 right-0 h-[55%] w-[55%] bg-blue-500/25 blur-[6px]" />
-      <div className="absolute top-0 left-0 h-full w-[42%] bg-black/90" />
-      <span
-        className={cn(
-          "relative z-10 flex h-full w-full items-center justify-center font-bold leading-none text-blue-400",
-          s.letter
-        )}
+      <defs>
+        <linearGradient
+          id={nGrad}
+          x1="28"
+          y1="24"
+          x2="68"
+          y2="76"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="38%" stopColor="#F0F9FF" />
+          <stop offset="62%" stopColor="#60A5FA" />
+          <stop offset="100%" stopColor="#2563EB" />
+        </linearGradient>
+      </defs>
+
+      <circle cx="50" cy="50" r="48" fill="#000000" />
+      <circle
+        cx="50"
+        cy="50"
+        r="48"
+        fill="none"
+        stroke="#1E3A8A"
+        strokeWidth="1.25"
+        strokeOpacity="0.55"
+      />
+
+      <g
+        stroke={`url(#${nGrad})`}
+        strokeWidth="8"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        fill="none"
       >
-        N
-      </span>
-    </div>
+        {/* Left leg — reads white→blue via shared gradient */}
+        <path d="M 31 27 V 73" />
+        {/* Diagonal — white at top-left, blue at bottom-right */}
+        <path d="M 31 27 L 62 73" />
+        {/* Right leg — shorter; mostly blue zone */}
+        <path d="M 62 73 V 41" />
+      </g>
+    </svg>
   );
 }
 
@@ -59,13 +95,21 @@ export function LogoWordmark({
   return (
     <span
       className={cn(
-        "font-semibold tracking-[-0.02em]",
+        "inline-flex items-baseline font-semibold tracking-[-0.02em] whitespace-nowrap",
         s.word,
         className
       )}
     >
-      <span className="text-[var(--text-primary)]">Neuro</span>
-      <span className="text-blue-400">Nexis</span>
+      <span className="text-white">Neuro</span>
+      <span
+        className="bg-clip-text text-transparent"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 8%, #BFDBFE 30%, #3B82F6 65%, #2563EB 100%)",
+        }}
+      >
+        Nexis
+      </span>
     </span>
   );
 }
@@ -94,11 +138,7 @@ export function Logo({
     </>
   );
 
-  const wrapperClass = cn(
-    "flex items-center group",
-    s.gap,
-    className
-  );
+  const wrapperClass = cn("flex items-center group", s.gap, className);
 
   if (href) {
     return (

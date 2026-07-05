@@ -83,7 +83,7 @@ export default function BehaviorEditorPage() {
             className="flex items-center gap-2 mb-4"
           >
             <Brain size={14} className="text-indigo-300" />
-            <span className="text-[11px] font-medium text-[var(--text-tertiary)] uppercase tracking-[0.08em]">Neural Engine</span>
+            <span className="text-[11px] font-medium text-[var(--text-tertiary)] uppercase tracking-[0.08em]">AI Settings</span>
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 10 }}
@@ -99,7 +99,7 @@ export default function BehaviorEditorPage() {
             transition={{ delay: 0.2 }}
             className="text-[var(--text-secondary)] mt-4 text-sm leading-relaxed max-w-2xl"
           >
-            CONFIGURE_DNA_VECTORS. CALIBRATE_CONVERSATIONAL_EQUITY. FINE_TUNE_EMOTIONAL_PROBABILITY.
+            Configure your AI's personality, conversational style, and personal information.
           </motion.p>
         </header>
 
@@ -111,7 +111,7 @@ export default function BehaviorEditorPage() {
                 <div className="flex items-center justify-between mb-10">
                    <div className="flex items-center gap-3">
                      <span className="text-[11px] font-medium text-indigo-200 border border-indigo-500/30 px-3 py-1 rounded-full">01</span>
-                     <h2 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-[0.08em]">Core identity</h2>
+                     <h2 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-[0.08em]">Core Identity</h2>
                    </div>
                 </div>
                 
@@ -122,7 +122,7 @@ export default function BehaviorEditorPage() {
                       <input 
                         name="profession" 
                         defaultValue={profile?.profession || ""} 
-                        placeholder="ENTER_DESIGNATION..."
+                        placeholder="E.g. Software Engineer, Student..."
                         className="w-full bg-[var(--bg-secondary)] border border-white/10 p-4 text-[var(--text-primary)] text-[15px] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)] outline-none transition-all rounded-xl placeholder:text-[var(--text-tertiary)]"
                         required 
                       />
@@ -132,7 +132,7 @@ export default function BehaviorEditorPage() {
                       <input 
                         name="languages" 
                         defaultValue={profile?.languages || ""} 
-                        placeholder="LANG_1, LANG_2..."
+                        placeholder="E.g. English, Spanish..."
                         className="w-full bg-[var(--bg-secondary)] border border-white/10 p-4 text-[var(--text-primary)] text-[15px] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)] outline-none transition-all rounded-xl placeholder:text-[var(--text-tertiary)]"
                         required 
                       />
@@ -141,24 +141,24 @@ export default function BehaviorEditorPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Atmosphere_Tone</label>
+                      <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Conversation Tone</label>
                       <div className="relative">
                         <select name="tone" className="w-full bg-[var(--bg-secondary)] border border-white/10 p-4 text-[var(--text-primary)] text-[15px] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)] outline-none transition-all rounded-xl appearance-none" defaultValue={profile?.tone || "Professional"}>
-                          <option value="Casual">Casual // Relaxed</option>
-                          <option value="Formal">Formal // Polished</option>
-                          <option value="Professional">Professional // Direct</option>
-                          <option value="Friendly">Friendly // Enthusiastic</option>
+                          <option value="Casual">Casual and Relaxed</option>
+                          <option value="Formal">Formal and Polished</option>
+                          <option value="Professional">Professional and Direct</option>
+                          <option value="Friendly">Friendly and Enthusiastic</option>
                         </select>
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-700">▼</div>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Emotional_EQ</label>
+                      <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Emotional Sensitivity</label>
                       <div className="relative">
                         <select name="emotionalSensitivity" className="w-full bg-[var(--bg-secondary)] border border-white/10 p-4 text-[var(--text-primary)] text-[15px] focus:border-[rgba(99,102,241,0.60)] focus:ring-4 focus:ring-[rgba(99,102,241,0.12)] outline-none transition-all rounded-xl appearance-none" defaultValue={profile?.emotionalSensitivity || "Medium"}>
-                          <option value="Low">Low_Sensitivity</option>
-                          <option value="Medium">Medium_Balance</option>
-                          <option value="High">High_Empathy</option>
+                          <option value="Low">Low Sensitivity</option>
+                          <option value="Medium">Medium Sensitivity</option>
+                          <option value="High">High Sensitivity</option>
                         </select>
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-700">▼</div>
                       </div>
@@ -171,30 +171,30 @@ export default function BehaviorEditorPage() {
                 <div className="flex items-center justify-between mb-10">
                    <div className="flex items-center gap-3">
                      <span className="text-[10px] font-mono font-black text-blue-500 border border-blue-500/30 px-2 py-0.5">02</span>
-                     <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Ethical_Geometry</h2>
+                     <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Beliefs & Opinions</h2>
                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Disagreement_Protocol</label>
+                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">How to handle disagreements</label>
                     <div className="relative">
                       <select name="disagreementStyle" className="w-full bg-zinc-950 border-2 border-zinc-800 p-4 text-zinc-100 font-mono text-xs focus:border-blue-500/50 outline-none transition-all rounded-none appearance-none" defaultValue={profile?.disagreementStyle || "Diplomatic"}>
-                        <option value="Assertive">Assertive_Mode</option>
-                        <option value="Diplomatic">Diplomatic_Mode</option>
-                        <option value="Avoidant">Avoidant_Mode</option>
+                        <option value="Assertive">Assertive (Direct)</option>
+                        <option value="Diplomatic">Diplomatic (Polite)</option>
+                        <option value="Avoidant">Avoidant (Agreeable)</option>
                       </select>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-700">▼</div>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Identity_Transparency</label>
+                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">AI Identity Disclosure</label>
                     <div className="relative">
                       <select name="identityTransparency" className="w-full bg-zinc-950 border-2 border-zinc-800 p-4 text-zinc-100 font-mono text-xs focus:border-blue-500/50 outline-none transition-all rounded-none appearance-none" defaultValue={profile?.identityTransparency || "Often"}>
-                        <option value="Always">Disclosure_Always</option>
-                        <option value="Often">Disclosure_Often</option>
-                        <option value="Rarely">Disclosure_Rarely</option>
-                        <option value="Never">Disclosure_Never</option>
+                        <option value="Always">Always mention being an AI</option>
+                        <option value="Often">Often mention being an AI</option>
+                        <option value="Rarely">Rarely mention being an AI</option>
+                        <option value="Never">Never mention being an AI</option>
                       </select>
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-700">▼</div>
                     </div>
@@ -208,13 +208,13 @@ export default function BehaviorEditorPage() {
               <div className="bg-zinc-900 border-2 border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-3 mb-8">
                   <Activity size={16} className="text-zinc-500" />
-                  <h3 className="text-[10px] font-mono font-black text-zinc-500 uppercase tracking-widest">Stats_Module</h3>
+                  <h3 className="text-[10px] font-mono font-black text-zinc-500 uppercase tracking-widest">System Status</h3>
                 </div>
                 <div className="space-y-4">
                    {[
-                     { label: "MEMORY_SYNC", value: "94.2%", status: "OK" },
-                     { label: "LATENCY_BUF", value: "142MS", status: "STABLE" },
-                     { label: "PERSONA_DRIFT", value: "0.02", status: "SAFE" }
+                     { label: "Memory Sync", value: "94.2%", status: "OK" },
+                     { label: "Latency", value: "142ms", status: "Stable" },
+                     { label: "Persona Stability", value: "99.8%", status: "Safe" }
                    ].map((stat, i) => (
                      <div key={i} className="flex justify-between items-center bg-zinc-950 border border-zinc-800 p-4">
                         <span className="text-[9px] font-mono text-zinc-600 uppercase font-black">{stat.label}</span>
@@ -241,12 +241,12 @@ export default function BehaviorEditorPage() {
                    {isLoading ? (
                      <>
                        <div className="h-2 w-2 bg-zinc-500 rounded-full animate-ping" />
-                       UPLOADING_DNA...
+                       Saving Profile...
                      </>
                    ) : (
                      <>
                        <Cpu size={16} />
-                       SYNC_NEURAL_DNA
+                       Save AI Profile
                      </>
                    )}
                 </div>
@@ -255,10 +255,10 @@ export default function BehaviorEditorPage() {
               <div className="bg-zinc-900/50 border-2 border-dashed border-zinc-800 p-6">
                 <div className="flex items-center gap-3 mb-4 text-zinc-600">
                   <Lock size={12} />
-                   <span className="text-[8px] font-mono font-black uppercase tracking-widest">Encryption_Note</span>
+                   <span className="text-[8px] font-mono font-black uppercase tracking-widest">Security Note</span>
                 </div>
                 <p className="text-[8px] font-mono text-zinc-700 leading-relaxed uppercase">
-                  All behavioral updates are cryptographically hashed and synced across the Society mesh in real-time. Unauthorized replication is impossible.
+                  All behavioral updates are securely saved and synced across the network in real-time. Your personal settings are protected.
                 </p>
               </div>
             </div>
@@ -269,24 +269,24 @@ export default function BehaviorEditorPage() {
              <section className="bg-zinc-900 border-2 border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-3 mb-10">
                    <span className="text-[10px] font-mono font-black text-green-500 border border-green-500/30 px-2 py-0.5">03</span>
-                   <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Conversational_Vols</h2>
+                   <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Conversation Style</h2>
                 </div>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Humorpulse_Lvl</label>
+                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Humor Level</label>
                     <select name="humorLevel" className="w-full bg-zinc-950 border-2 border-zinc-800 p-4 text-zinc-100 font-mono text-xs focus:border-green-500/50 outline-none transition-all rounded-none appearance-none" defaultValue={profile?.humorLevel || "Moderate"}>
-                      <option value="None">Zero_Humor</option>
-                      <option value="Light">Light_Wit</option>
-                      <option value="Moderate">Default_Mode</option>
-                      <option value="Frequent">Satirical_Max</option>
+                      <option value="None">No Humor</option>
+                      <option value="Light">Light Humor</option>
+                      <option value="Moderate">Moderate Humor</option>
+                      <option value="Frequent">Very Humorous</option>
                     </select>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Response_Span</label>
+                    <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Response Length</label>
                     <select name="responseLength" className="w-full bg-zinc-950 border-2 border-zinc-800 p-4 text-zinc-100 font-mono text-xs focus:border-green-500/50 outline-none transition-all rounded-none appearance-none" defaultValue={profile?.responseLength || "Medium"}>
-                      <option value="Short">Concise_Packets</option>
-                      <option value="Medium">Standard_Vols</option>
-                      <option value="Detailed">Extended_Logs</option>
+                      <option value="Short">Short</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Detailed">Long and Detailed</option>
                     </select>
                   </div>
                 </div>
@@ -295,15 +295,15 @@ export default function BehaviorEditorPage() {
              <section className="bg-zinc-900 border-2 border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-3 mb-10">
                    <span className="text-[10px] font-mono font-black text-orange-500 border border-orange-500/30 px-2 py-0.5">04</span>
-                   <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Biological_Fidelity</h2>
+                   <h2 className="text-sm font-mono font-black text-zinc-100 uppercase tracking-widest">Personal Information</h2>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Marital_Correlation</label>
+                  <label className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest">Marital Status</label>
                   <select name="maritalStatus" className="w-full bg-zinc-950 border-2 border-zinc-800 p-4 text-zinc-100 font-mono text-xs focus:border-orange-500/50 outline-none transition-all rounded-none appearance-none" defaultValue={profile?.maritalStatus || "Single"}>
                     <option value="Single">Single</option>
                     <option value="In a relationship">In a Relationship</option>
                     <option value="Married">Married</option>
-                    <option value="It's complicated">Complex_Dynamic</option>
+                    <option value="It's complicated">It's complicated</option>
                   </select>
                 </div>
              </section>
