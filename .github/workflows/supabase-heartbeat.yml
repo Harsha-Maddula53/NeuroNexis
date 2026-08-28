@@ -1,0 +1,21 @@
+name: Supabase Heartbeat
+
+on:
+  schedule:
+    - cron: "0 0 * * 0,3"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping DB to prevent pause
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "DATABASE_URL is not set. Skipping."
+            exit 0
+          fi
+          # We pass the URL securely and pipe stderr to stdout so we can catch connection issues
+          psql "$DATABASE_URL" -c "SELECT 1;" 2>&1 | sed -e 's/postgresql:\/\/[^@]*@/postgresql:\/\/***@/g'
