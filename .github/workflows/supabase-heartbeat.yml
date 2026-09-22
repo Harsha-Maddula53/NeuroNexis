@@ -22,7 +22,7 @@ jobs:
           fi
           
           # Strip Prisma-specific pgbouncer query parameter so psql can parse it
-          CLEAN_URL="${DATABASE_URL//?pgbouncer=true/}"
+          CLEAN_URL="${DATABASE_URL%%\?*}""
           CLEAN_URL="${CLEAN_URL//&pgbouncer=true/}"
           
           # We pass the URL securely and pipe stderr to stdout so we can catch connection issues
