@@ -23,7 +23,7 @@
 - [x] **Observability**: Configured Sentry with privacy scrubbing rules via `beforeSend` (scrubs message content, IP addresses; retains internal UUIDs for impact tracking).
 - [x] **Test Coverage**: Added Playwright E2E tests for auth flows (registration, login, protected routes) and API ownership integration tests verifying unauthorized callers get 403s on AI endpoints.
 - [x] **Mobile Responsiveness**: Migrated main AppShell layout to an off-canvas drawer pattern (hamburger menu) on mobile to prevent the sidebar from crushing content.
-- [x] **Infrastructure**: Created a Supabase heartbeat GitHub Action workflow to keep the free tier DB active, securing the connection string against leakage.
+- [x] **Infrastructure**: Created a Supabase heartbeat GitHub Action workflow to keep the free tier DB active. Connection string masking and DB reachability formally verified in cloud runner (Run #14).
 
 ## Phase 4: Deployment & Production Readiness
 - [x] **Deployment Pipeline**: Created `railway.toml` leveraging the `releaseCommand` hook to run `npx prisma migrate deploy` safely isolated from local builds.
@@ -39,7 +39,6 @@ Project implementation complete! Next steps rely on human action (deployment, se
 
 - **AI Disclosure Legal Review**: `AI_DISCLOSURE_REQUIREMENTS.md` needs formal legal review before launch.
 - **Real-time Scaling**: SSE uses in-memory EventEmitter. If scaling to multiple server instances, must migrate to Redis pub/sub.
-- **GitHub Action Verification**: The Supabase heartbeat GitHub workflow has been verified locally for credentials and regex masking, but it has **never been triggered end-to-end** via GitHub Actions. First time someone has `gh` CLI access or runs a deployment, manually trigger it via `gh workflow run` to guarantee it runs flawlessly in the cloud runner.
 - **Model Deprecation**: Llama 3.1 8B and Llama Guard 3 8B (and Llama Guard 4 12B) were deprecated by provider (Groq), not a bug we introduced. Replaced with openai/gpt-oss-20b and openai/gpt-oss-safeguard-20b.
 - **RSC Rendering Crash**: Fixed createMotionComponent server/client error by migrating a client-side Card component to standard HTML tags inside the server-rendered Admin Reports page.
 - **Ubuntu 26 Runner Migration**: GitHub has flagged that the ubuntu-latest runner label migrates to Ubuntu 26 starting October 19, 2026. The Supabase heartbeat workflow (and any other future CI) should be revisited around that date to ensure nothing breaks.
