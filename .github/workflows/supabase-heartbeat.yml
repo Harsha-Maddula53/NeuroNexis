@@ -13,9 +13,18 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
+          set -e
+          set -o pipefail
+          
           if [ -z "$DATABASE_URL" ]; then
-            echo "DATABASE_URL is not set. Skipping."
-            exit 0
+            echo "DATABASE_URL is not set. Failing job."
+            exit 1
           fi
+          
+          # Strip Prisma-specific pgbouncer query parameter so psql can parse it
+          CLEAN_URL="${DATABASE_URL//?pgbouncer=true/}"
+          CLEAN_URL="${CLEAN_URL//&pgbouncer=true/}"
+          
           # We pass the URL securely and pipe stderr to stdout so we can catch connection issues
-          psql "$DATABASE_URL" -c "SELECT 1;" 2>&1 | sed -e 's/postgresql:\/\/[^@]*@/postgresql:\/\/***@/g'
+          # pipefail ensures that if psql fails, the whole pipeline fails despite sed succeeding
+          psql "$CLEAN_URL" -c "SELECT 1;" 2>&1 | sed -e 's/postgresql:\/\/[^@]*@/postgresql:\/\/***@/g'
