@@ -416,11 +416,51 @@ export default function SettingsPage() {
                  </Card>
               </div>
             </motion.section>
+
+            {/* Mobile Account Details (Visible only on small screens) */}
+            <motion.section className="block xl:hidden mt-12" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+              <div className="flex items-center gap-3 mb-8">
+                 <ShieldCheck size={18} className="text-indigo-300" />
+                 <h2 className="text-lg font-bold text-white tracking-tight">Account Details</h2>
+              </div>
+              <Card className="p-8 md:p-10 bg-zinc-900/20 border-zinc-800/80">
+                 <div className="space-y-6">
+                   <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                         <div className="h-2 w-2 bg-emerald-500 rounded-full" />
+                         <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Verified User</span>
+                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-500 border-none font-bold">ACTIVE</Badge>
+                   </div>
+                   
+                   <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                         <div className="h-2 w-2 bg-indigo-500 rounded-full" />
+                         <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">AI Presence</span>
+                      </div>
+                      <Badge className={cn(
+                        "border-none font-bold",
+                        isAiEnabled ? "bg-indigo-500/10 text-indigo-300" : "bg-white/5 text-[var(--text-tertiary)]"
+                      )}>
+                        {isAiEnabled ? "ONLINE" : "OFFLINE"}
+                      </Badge>
+                   </div>
+                   
+                   <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                         <div className="h-2 w-2 bg-amber-500 rounded-full" />
+                         <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Last Login</span>
+                      </div>
+                      <span className="text-xs font-bold text-white">Today</span>
+                   </div>
+                 </div>
+              </Card>
+            </motion.section>
           </div>
         </div>
       </div>
 
-      <RightPanel title="Account Details" className="bg-zinc-950 border-l border-zinc-900 hidden lg:block">
+      <RightPanel title="Account Details" className="bg-zinc-950 border-l border-zinc-900 hidden xl:block">
         <div className="space-y-10">
           <div>
             <div className="flex items-center gap-2 mb-3">

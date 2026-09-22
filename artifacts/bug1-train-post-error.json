@@ -1,0 +1,5 @@
+{
+  "url": "http://localhost:3000/api/ai/train",
+  "status": 400,
+  "body": "{\"error\":\"Profile incomplete\",\"missing\":{\"aiIdentity\":true,\"behaviorProfile\":true},\"setupPath\":\"/setup/identity\"}"
+}

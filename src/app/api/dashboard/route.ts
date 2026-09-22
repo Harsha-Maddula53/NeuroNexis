@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-    const rate = checkRateLimit(`dashboard:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const rate = await checkRateLimit(`dashboard:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

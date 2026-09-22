@@ -55,7 +55,42 @@ export default function ChatPage() {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(true);
   const [isAiResponding, setIsAiResponding] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const handleBlock = async () => {
+    if (!recipient?.id || !confirm("Are you sure you want to block this user?")) return;
+    setIsBlocking(true);
+    try {
+      await fetch('/api/block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blockedId: recipient.id })
+      });
+      alert("User blocked.");
+      router.push('/dashboard');
+    } catch(e) {
+      alert("Failed to block user");
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  const handleReport = async () => {
+    if (!recipient?.id) return;
+    const reason = prompt("Why are you reporting this user?");
+    if (!reason) return;
+    try {
+      await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportedId: recipient.id, reason })
+      });
+      alert("User reported to moderators.");
+    } catch(e) {
+      alert("Failed to report user");
+    }
+  };
 
   const fetchMessages = useCallback(async (silent = false) => {
     try {
@@ -124,7 +159,11 @@ export default function ChatPage() {
       });
 
       if (!res.ok) {
-        console.error("Failed to send message");
+        const errorText = await res.text().catch(() => "Failed to send message");
+        console.error(errorText);
+        alert(errorText || "Failed to send message");
+        // Revert optimistic update
+        setMessages(prev => prev.filter(m => m.id !== tempId));
       } else {
         const data = await res.json();
         
@@ -213,12 +252,16 @@ export default function ChatPage() {
     : activeConversation?.participant1;
 
   const [isAiInsightsOpen, setIsAiInsightsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--bg-primary)] font-sans">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-[var(--bg-primary)] font-sans">
       
-      {/* Left Sidebar (Conversations) - Desktop Only */}
-      <div className="w-[320px] border-r border-white/10 flex flex-col bg-[var(--bg-primary)] shrink-0 overflow-hidden hidden xl:flex">
+      {/* Left Sidebar (Conversations) */}
+      <div className={cn(
+        "w-[320px] border-r border-white/10 flex flex-col bg-[var(--bg-primary)] shrink-0 overflow-hidden transition-all duration-300 absolute xl:static h-full z-40",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0"
+      )}>
         <div className="p-6 border-b border-white/10 bg-[rgba(10,10,10,0.6)] backdrop-blur-md sticky top-0 z-10">
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Chats</h2>
           <div className="relative group">
@@ -272,17 +315,25 @@ export default function ChatPage() {
         </div>
       </div>
 
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 xl:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pr-[400px] bg-[var(--bg-primary)] relative z-20">
+      <div className="flex-1 flex flex-col min-w-0 lg:pr-[400px] bg-[var(--bg-primary)] relative z-20 h-[100dvh]">
         
         {/* Chat Header */}
-        <header className="h-16 flex items-center justify-between px-6 bg-[rgba(10,10,10,0.70)] backdrop-blur-md border-b border-white/10 shrink-0 sticky top-0 z-30">
-          <div className="flex items-center gap-4">
+        <header className="h-16 flex items-center justify-between px-4 sm:px-6 bg-[rgba(10,10,10,0.70)] backdrop-blur-md border-b border-white/10 shrink-0 sticky top-0 z-30">
+          <div className="flex items-center gap-2 sm:gap-4">
              <button 
-              onClick={() => router.push('/chat')}
+              onClick={() => setIsSidebarOpen(true)}
               className="xl:hidden p-2 rounded-lg hover:bg-white/5 text-[var(--text-secondary)]"
              >
-               <ArrowLeft size={20} />
+               <MoreHorizontal size={20} />
              </button>
              
              <div className="flex items-center gap-3">
@@ -310,7 +361,14 @@ export default function ChatPage() {
               <Zap size={14} className="text-indigo-300" />
               <span className="text-[11px] font-bold uppercase tracking-wider">AI Insights</span>
             </Button>
-            <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-[var(--text-tertiary)]">
+            <Button variant="ghost" size="sm" onClick={handleReport} className="text-orange-400 hover:text-orange-300 hover:bg-orange-400/10 hidden sm:flex h-9 gap-2">
+              <Shield size={14} />
+              <span className="text-[11px] font-bold uppercase tracking-wider">Report</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleBlock} disabled={isBlocking} className="text-red-400 hover:text-red-300 hover:bg-red-400/10 hidden sm:flex h-9 gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Block</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="sm:hidden h-9 w-9 p-0 text-[var(--text-tertiary)]">
               <MoreHorizontal size={20} />
             </Button>
           </div>
@@ -423,8 +481,8 @@ export default function ChatPage() {
         </main>
 
         {/* Input Footer */}
-        <footer className="p-6 bg-[rgba(10,10,10,0.65)] backdrop-blur-md border-t border-white/10 shrink-0">
-          <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto flex items-center gap-4">
+        <footer className="p-4 sm:p-6 bg-[rgba(10,10,10,0.65)] backdrop-blur-md border-t border-white/10 shrink-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto flex items-center gap-2 sm:gap-4">
             <div className="flex-1 relative group bg-[var(--bg-secondary)] rounded-xl p-1 transition-all border border-white/10 focus-within:border-[rgba(99,102,241,0.60)] focus-within:ring-4 focus-within:ring-[rgba(99,102,241,0.12)]">
               <input
                 type="text"

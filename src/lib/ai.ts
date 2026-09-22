@@ -143,14 +143,6 @@ export function parseAIResponse(rawResponse: string): { content: string; confide
   return { content, confidence };
 }
 
-/**
- * Ensures transparency by adding the AI prefix if it's missing.
- */
-export function wrapAIDisplay(name: string, content: string): string {
-  const prefix = `(AI Representation of ${name}) `;
-  if (content.startsWith("(AI ")) return content; // Already prefixed
-  return prefix + content;
-}
 
 export function buildTrainingSystemPrompt(
   user: UserWithRelations
@@ -273,6 +265,46 @@ export async function getRelevantContext(
   }
 }
 
+export async function moderateContent(
+  messages: Array<{ role: string; content: string }>
+): Promise<{ safe: boolean; reason?: string }> {
+  try {
+    if (!process.env.GROQ_API_KEY) return { safe: true }; // Fall open if no key
+
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-oss-safeguard-20b", // Updated per Groq deprecation
+        messages: messages,
+        temperature: 0.0,
+        max_tokens: 20
+      })
+    });
+
+    if (!response.ok) {
+      console.warn("Moderation API failed, failing open for availability.", await response.text());
+      return { safe: true };
+    }
+
+    const data = await response.json();
+    const resultText = data.choices?.[0]?.message?.content?.trim().toLowerCase() || "safe";
+    
+    if (resultText.startsWith("unsafe")) {
+      const parts = resultText.split('\n');
+      return { safe: false, reason: parts[1] || "Policy violation" };
+    }
+
+    return { safe: true };
+  } catch (error) {
+    console.error("Moderation error:", error);
+    return { safe: true }; // Fail open if error
+  }
+}
+
 export async function habituateUserIdentity(
   userId: string,
   contextType: 'chat' | 'feedback',
@@ -347,7 +379,7 @@ Example Output:
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         messages: [
           { role: 'system', content: systemInstruction },
           { role: 'user', content: analysisPrompt }

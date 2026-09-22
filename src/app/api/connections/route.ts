@@ -11,7 +11,7 @@ export async function GET() {
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
     const userId = session.user.id;
-    const getRate = checkRateLimit(`connections:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const getRate = await checkRateLimit(`connections:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!getRate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
     const userId = session.user.id;
-    const postRate = checkRateLimit(`connections:post:${userId}`, { limit: 30, windowMs: 60_000 });
+    const postRate = await checkRateLimit(`connections:post:${userId}`, { limit: 30, windowMs: 60_000 });
     if (!postRate.success) {
       return NextResponse.json(
         { error: "Too many connection requests. Please try again later." },
@@ -116,7 +116,7 @@ export async function PATCH(req: Request) {
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
     const userId = session.user.id;
-    const patchRate = checkRateLimit(`connections:patch:${userId}`, { limit: 40, windowMs: 60_000 });
+    const patchRate = await checkRateLimit(`connections:patch:${userId}`, { limit: 40, windowMs: 60_000 });
     if (!patchRate.success) {
       return NextResponse.json(
         { error: "Too many update requests. Please slow down." },

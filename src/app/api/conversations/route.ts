@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-    const rate = checkRateLimit(`conversations:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const rate = await checkRateLimit(`conversations:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     const recipientId = typeof body.recipientId === "string" ? body.recipientId.trim() : "";
     const userId = session.user.id;
 
-    const rate = checkRateLimit(`conversations:post:${userId}`, { limit: 30, windowMs: 60_000 });
+    const rate = await checkRateLimit(`conversations:post:${userId}`, { limit: 30, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

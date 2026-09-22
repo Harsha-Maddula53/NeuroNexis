@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { buildTrainingSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL, getRelevantContext, habituateUserIdentity } from "@/lib/ai";
+import { buildTrainingSystemPrompt, parseAIResponse, GROQ_API_URL, getRelevantContext, habituateUserIdentity } from "@/lib/ai";
 import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 // GET handler remains unchanged...
@@ -15,7 +15,7 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    const trainRate = checkRateLimit(`ai:train:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const trainRate = await checkRateLimit(`ai:train:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!trainRate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please try again shortly." },
@@ -25,6 +25,19 @@ export async function GET() {
         },
       );
     }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        aiIdentity: { select: { id: true } },
+        behaviorProfile: { select: { id: true } },
+      },
+    });
+
+    const hasAiIdentity = Boolean(user?.aiIdentity);
+    const hasBehaviorProfile = Boolean(user?.behaviorProfile);
+    const profileComplete = hasAiIdentity && hasBehaviorProfile;
 
     // Find or create a self-conversation for training
     let trainingConversation = await prisma.conversation.findFirst({
@@ -51,6 +64,11 @@ export async function GET() {
 
     return NextResponse.json({
       conversationId: trainingConversation.id,
+      profileComplete,
+      missing: {
+        aiIdentity: !hasAiIdentity,
+        behaviorProfile: !hasBehaviorProfile,
+      },
       messages: messages.map((m) => ({
         id: m.id,
         sender: m.isAi ? "ai" : "user",
@@ -73,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     const userId = session.user.id;
 
-    const postRate = checkRateLimit(`ai:train:post:${userId}`, { limit: 25, windowMs: 60_000 });
+    const postRate = await checkRateLimit(`ai:train:post:${userId}`, { limit: 25, windowMs: 60_000 });
     if (!postRate.success) {
       return NextResponse.json(
         { error: "Too many AI training prompts. Please slow down." },
@@ -120,7 +138,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "AI provider is not configured" }, { status: 500 });
     }
 
-    // 1. Save user message
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { aiIdentity: true, behaviorProfile: true },
+    });
+
+    if (!user || !user.aiIdentity || !user.behaviorProfile) {
+      return NextResponse.json(
+        {
+          error: "Profile incomplete",
+          missing: {
+            aiIdentity: !user?.aiIdentity,
+            behaviorProfile: !user?.behaviorProfile,
+          },
+          setupPath: !user?.aiIdentity ? "/setup/identity" : "/setup/behavior",
+        },
+        { status: 400 },
+      );
+    }
+
     await prisma.message.create({
       data: {
         conversationId,
@@ -129,16 +165,6 @@ export async function POST(req: NextRequest) {
         isAi: false,
       },
     });
-
-    // 2. Load user and behavior
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { aiIdentity: true, behaviorProfile: true },
-    });
-
-    if (!user || !user.aiIdentity || !user.behaviorProfile) {
-      return NextResponse.json({ error: "Profile incomplete" }, { status: 400 });
-    }
 
     // 3. Load history
     const recentMessages = await prisma.message.findMany({
@@ -165,7 +191,7 @@ export async function POST(req: NextRequest) {
 
     const controller = new AbortController();
     const groqBody = JSON.stringify({
-      model: "llama-3.1-8b-instant", // Using Groq's fast LLAMA 3
+      model: "openai/gpt-oss-20b", // Updated per Groq deprecation
       messages: conversationContents,
       max_tokens: 512,
       temperature: 0.8,
@@ -249,7 +275,7 @@ export async function POST(req: NextRequest) {
             data: {
               conversationId,
               senderId: userId,
-              content: wrapAIDisplay(user.name, content),
+              content: content,
               isAi: true,
               confidenceLevel: confidence,
             },

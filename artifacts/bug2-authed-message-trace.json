@@ -1,0 +1,11 @@
+{
+  "finalUrl": "https://ethereal.email/message/aqae9HS9RyYbtadtaqakjV31x4oQTGTtAAAABkf7P.asaHayLDPseBKkp.s",
+  "title": "Reset your NeuroNexis password | Ethereal Email",
+  "has404": false,
+  "h1": "Reset your NeuroNexis password",
+  "visibleText": "Ethereal\nHome\nFAQ\nHelp\nMessages\nkhcgoy5hpicfklq3@ethereal.email\n This is a public message view — anyone with this URL can see the message.\nReset your NeuroNexis password\nHeaders\nEnvelope\nSource\nDownload .eml\nSubject\nReset your NeuroNexis password\nFrom\nNeuroNexis System <noreply@neuronexis.local>\nTo\n<smoke-1788853710389@test.com>\nTime\nToday at 18:56\nMessage-ID\n<fffd09ed-af22-43d2-44fb-a7e68f1408e3@neuronexis.local>\nHTML\nPlain text\n© 2017–2026 Ethereal Email\ninfo@ethereal.email\nservice provided by EmailEngine",
+  "iframeHtml": "<head><base href=\"/preview-base/\" target=\"_parent\"><link rel=\"stylesheet\" href=\"/mail.css\"><script>function resizeIframe(obj) {obj.style.height = obj.contentWindow.document.body.scrollHeight + \"px\";}</script></head><body><p>You requested a password reset for your NeuroNexis account.</p>\n        <p><a href=\"http://localhost:3000/reset-password?token=verify-ethereal-1789305986445-second\">Reset your password</a></p>\n        <p>This link expires in 1 hour. If you did not request this, you can ignore this email.</p></body>",
+  "resetLinkHref": "http://localhost:3000/reset-password?token=verify-ethereal-1789305986445-second",
+  "etherealUser": "khcgoy5hpicfklq3@ethereal.email",
+  "to": "smoke-1788853710389@test.com"
+}

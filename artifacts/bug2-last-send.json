@@ -1,0 +1,21 @@
+{
+  "send1": {
+    "sent": true,
+    "logged": true
+  },
+  "send2": {
+    "sent": true,
+    "logged": true
+  },
+  "user1": "khcgoy5hpicfklq3@ethereal.email",
+  "user2": "khcgoy5hpicfklq3@ethereal.email",
+  "accountUser1": "khcgoy5hpicfklq3@ethereal.email",
+  "accountUser2": "khcgoy5hpicfklq3@ethereal.email",
+  "sameAccountAcrossTwoSends": true,
+  "previewUrl1": "https://ethereal.email/message/aqae9HS9RyYbtadtaqakiZW6vNXKjTVnAAAABSkf8DhGrkSOxfIdircy0HM",
+  "previewUrl2": "https://ethereal.email/message/aqae9HS9RyYbtadtaqakjV31x4oQTGTtAAAABkf7P.asaHayLDPseBKkp.s",
+  "response1": "250 Accepted [STATUS=new MSGID=aqae9HS9RyYbtadtaqakiZW6vNXKjTVnAAAABSkf8DhGrkSOxfIdircy0HM]",
+  "response2": "250 Accepted [STATUS=new MSGID=aqae9HS9RyYbtadtaqakjV31x4oQTGTtAAAABkf7P.asaHayLDPseBKkp.s]",
+  "sentAt1": "2026-09-13T13:26:30.393Z",
+  "sentAt2": "2026-09-13T13:26:34.342Z"
+}

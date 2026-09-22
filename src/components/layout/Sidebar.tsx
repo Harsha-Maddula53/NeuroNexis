@@ -35,7 +35,11 @@ const navItems = [
   { name: "Account", href: "/settings", icon: Settings }
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onMobileClose?: () => void;
+}
+
+export function Sidebar({ onMobileClose }: SidebarProps = {}) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -82,6 +86,7 @@ export function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => onMobileClose?.()}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 group relative",
                   isActive 

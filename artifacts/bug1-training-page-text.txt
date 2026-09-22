@@ -1,0 +1,14 @@
+AI Training Sandbox
+CALIBRATION ACTIVE
+PRIVATE MODE
+Back to Society
+Finish setup before training
+
+The AI Training Sandbox calibrates a twin that already has an identity and behavior profile. Complete onboarding first — this screen will not send messages until those steps are done.
+
+Set up AI identity
+
+MESSAGES ARE SAVED TO YOUR PROFILE FOR CONTINUOUS LEARNING
+
+API STABLE
+CORE SYNCED

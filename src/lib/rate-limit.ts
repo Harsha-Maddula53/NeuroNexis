@@ -1,11 +1,9 @@
+import { Redis } from '@upstash/redis';
+import * as Sentry from '@sentry/nextjs';
+
 type RateLimitConfig = {
   limit: number;
   windowMs: number;
-};
-
-type Bucket = {
-  count: number;
-  resetAtMs: number;
 };
 
 export type RateLimitResult = {
@@ -15,22 +13,18 @@ export type RateLimitResult = {
   resetAtMs: number;
 };
 
-const buckets = new Map<string, Bucket>();
-let nextSweepAtMs = 0;
-
-function sweepExpiredBuckets(nowMs: number): void {
-  if (nowMs < nextSweepAtMs) {
-    return;
-  }
-
-  for (const [key, bucket] of buckets.entries()) {
-    if (bucket.resetAtMs <= nowMs) {
-      buckets.delete(key);
-    }
-  }
-
-  nextSweepAtMs = nowMs + 60_000;
+export interface RateLimitClient {
+  incr(key: string): Promise<number>;
+  pexpire(key: string, ms: number): Promise<any>;
 }
+
+// Initialize Redis if credentials exist
+export const defaultRedisClient = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
 export function getClientIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -54,44 +48,63 @@ export function getClientIp(request: Request): string {
   return "unknown";
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   config: RateLimitConfig,
   nowMs = Date.now(),
-): RateLimitResult {
-  sweepExpiredBuckets(nowMs);
+  client: RateLimitClient | null = defaultRedisClient
+): Promise<RateLimitResult> {
+  const resetAtMs = nowMs + config.windowMs;
 
-  const existing = buckets.get(key);
-  if (!existing || existing.resetAtMs <= nowMs) {
-    const resetAtMs = nowMs + config.windowMs;
-    buckets.set(key, { count: 1, resetAtMs });
-
+  if (!client) {
+    // If Redis is not configured, fail open locally to not block development/tests.
+    console.warn('[RateLimit] Redis not configured, failing OPEN locally.');
     return {
       success: true,
       limit: config.limit,
-      remaining: Math.max(0, config.limit - 1),
+      remaining: 0,
       resetAtMs,
     };
   }
 
-  if (existing.count >= config.limit) {
+  try {
+    const prefix = process.env.RATE_LIMIT_PREFIX || 'ratelimit:';
+    const redisKey = `${prefix}${key}`;
+    // Atomic increment
+    const currentCount = await client.incr(redisKey);
+    
+    // If it was the first hit, set expiry
+    if (currentCount === 1) {
+      await client.pexpire(redisKey, config.windowMs);
+    }
+
+    const success = currentCount <= config.limit;
+    
+    return {
+      success,
+      limit: config.limit,
+      remaining: Math.max(0, config.limit - currentCount),
+      // We estimate the reset time since we don't fetch TTL strictly for performance,
+      // assuming it will reset at nowMs + windowMs for the first hit
+      resetAtMs,
+    };
+  } catch (error) {
+    // Fail-closed approach on Redis error.
+    console.error('[RateLimit] Redis connection or command failed:', error);
+    
+    // Alert via Sentry to make it a paged incident instead of a silent failure
+    Sentry.captureException(error, {
+      tags: { component: 'rate-limit' },
+      extra: { key, limit: config.limit }
+    });
+
     return {
       success: false,
       limit: config.limit,
       remaining: 0,
-      resetAtMs: existing.resetAtMs,
+      resetAtMs,
     };
   }
-
-  existing.count += 1;
-  buckets.set(key, existing);
-
-  return {
-    success: true,
-    limit: config.limit,
-    remaining: Math.max(0, config.limit - existing.count),
-    resetAtMs: existing.resetAtMs,
-  };
 }
 
 export function buildRateLimitHeaders(result: RateLimitResult): HeadersInit {
@@ -100,9 +113,4 @@ export function buildRateLimitHeaders(result: RateLimitResult): HeadersInit {
     "X-RateLimit-Remaining": String(result.remaining),
     "X-RateLimit-Reset": String(Math.ceil(result.resetAtMs / 1000)),
   };
-}
-
-export function resetRateLimitStoreForTests(): void {
-  buckets.clear();
-  nextSweepAtMs = 0;
 }

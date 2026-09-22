@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id;
-    const rate = checkRateLimit(`user:profile:${userId}`, { limit: 30, windowMs: 60_000 });
+    const rate = await checkRateLimit(`user:profile:${userId}`, { limit: 30, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many profile updates. Please try again later." },

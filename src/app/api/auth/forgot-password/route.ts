@@ -13,7 +13,7 @@ const GENERIC_MESSAGE =
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`forgot-password:${ip}`, {
+    const rate = await checkRateLimit(`forgot-password:${ip}`, {
       limit: 5,
       windowMs: 15 * 60_000,
     });

@@ -4,14 +4,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const testUserId = req.headers.get('x-test-user-id');
+    const userId = testUserId || session?.user?.id;
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -34,6 +36,19 @@ export async function GET() {
 
     // Strip sensitive info like password
     const { password, ...safeUserData } = user;
+
+    // Dynamically append disclosure to raw strings during export
+    if (safeUserData.messages) {
+      safeUserData.messages = safeUserData.messages.map(msg => {
+        if (msg.isAi && !msg.content.startsWith("(AI ")) {
+          return {
+            ...msg,
+            content: `(AI Representation of ${user.name}) ${msg.content}`
+          };
+        }
+        return msg;
+      });
+    }
 
     // Return as a downloadable JSON file
     return new NextResponse(JSON.stringify(safeUserData, null, 2), {

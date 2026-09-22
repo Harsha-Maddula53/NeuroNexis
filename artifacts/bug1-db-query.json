@@ -1,0 +1,43 @@
+﻿=== USER ROW ===
+{
+  "id": "cmtsdba470000ddd4leksyd57",
+  "name": "Test User",
+  "email": "smoke-1788853710389@test.com",
+  "password": "[redacted]",
+  "dateOfBirth": "1990-01-01T00:00:00.000Z",
+  "gender": "male",
+  "bio": null,
+  "profilePhoto": null,
+  "aiEnabled": true,
+  "onlineStatus": false,
+  "createdAt": "2026-09-08T07:48:32.119Z",
+  "aiIdentity": null,
+  "behaviorProfile": null
+}
+=== COUNTS ===
+{
+  "ownerId": "cmtsdba470000ddd4leksyd57",
+  "identityCount": 0,
+  "behaviorCount": 0
+}
+=== CONVERSATIONS + MESSAGES ===
+[
+  {
+    "id": "cmtsdbb3c0002ddd4wupid5cm",
+    "participant1Id": "cmtsdba470000ddd4leksyd57",
+    "participant2Id": "cmtsdba470000ddd4leksyd57",
+    "createdAt": "2026-09-08T07:48:33.384Z",
+    "lastMessageAt": "2026-09-08T07:48:33.384Z",
+    "messages": [
+      {
+        "id": "cmtsdbc7b0004ddd4p0qcdri7",
+        "conversationId": "cmtsdbb3c0002ddd4wupid5cm",
+        "senderId": "cmtsdba470000ddd4leksyd57",
+        "content": "Hello AI twin",
+        "isAi": false,
+        "confidenceLevel": null,
+        "timestamp": "2026-09-08T07:48:34.824Z"
+      }
+    ]
+  }
+]

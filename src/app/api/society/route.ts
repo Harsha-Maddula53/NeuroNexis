@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`society:${ip}`, { limit: 180, windowMs: 60_000 });
+    const rate = await checkRateLimit(`society:${ip}`, { limit: 180, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-    const getRate = checkRateLimit(`ai:identity:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const getRate = await checkRateLimit(`ai:identity:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!getRate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const userId = session.user.id;
-    const postRate = checkRateLimit(`ai:identity:post:${userId}`, { limit: 20, windowMs: 60_000 });
+    const postRate = await checkRateLimit(`ai:identity:post:${userId}`, { limit: 20, windowMs: 60_000 });
     if (!postRate.success) {
       return NextResponse.json(
         { error: "Too many updates. Please try again later." },

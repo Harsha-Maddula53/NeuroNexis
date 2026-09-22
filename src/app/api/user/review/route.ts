@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-    const getRate = checkRateLimit(`user:review:get:${userId}`, { limit: 120, windowMs: 60_000 });
+    const getRate = await checkRateLimit(`user:review:get:${userId}`, { limit: 120, windowMs: 60_000 });
     if (!getRate.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id;
-    const postRate = checkRateLimit(`user:review:post:${userId}`, { limit: 40, windowMs: 60_000 });
+    const postRate = await checkRateLimit(`user:review:post:${userId}`, { limit: 40, windowMs: 60_000 });
     if (!postRate.success) {
       return NextResponse.json(
         { error: "Too many feedback submissions. Please slow down." },

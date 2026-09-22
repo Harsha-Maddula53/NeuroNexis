@@ -38,6 +38,11 @@ export default function TrainingChatPage() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [profileGate, setProfileGate] = useState<{
+    complete: boolean;
+    missingIdentity: boolean;
+    missingBehavior: boolean;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -55,6 +60,15 @@ export default function TrainingChatPage() {
         if (res.ok) {
           const data = await res.json();
           setConversationId(data.conversationId);
+          setProfileGate({
+            complete: Boolean(data.profileComplete),
+            missingIdentity: Boolean(data.missing?.aiIdentity),
+            missingBehavior: Boolean(data.missing?.behaviorProfile),
+          });
+          if (data.profileComplete === false) {
+            setIsLoadingHistory(false);
+            return;
+          }
           if (data.messages && data.messages.length > 0) {
             setMessages(
               data.messages.map((m: any) => ({
@@ -77,6 +91,11 @@ export default function TrainingChatPage() {
         }
       } catch (err) {
         console.error("Error loading training history:", err);
+        setProfileGate({
+          complete: false,
+          missingIdentity: true,
+          missingBehavior: true,
+        });
       } finally {
         setIsLoadingHistory(false);
       }
@@ -86,7 +105,7 @@ export default function TrainingChatPage() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || !conversationId) return;
+    if (!inputValue.trim() || !conversationId || profileGate?.complete === false) return;
 
     const userText = inputValue.trim();
 
@@ -110,7 +129,17 @@ export default function TrainingChatPage() {
         });
 
         if (!res.ok) {
-          const errorData = await res.json();
+          const errorData = await res.json().catch(() => ({}));
+          if (errorData.error === "Profile incomplete") {
+            setProfileGate({
+              complete: false,
+              missingIdentity: Boolean(errorData.missing?.aiIdentity),
+              missingBehavior: Boolean(errorData.missing?.behaviorProfile),
+            });
+            setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
+            setIsTyping(false);
+            return;
+          }
           throw new Error(errorData.error || "Failed to get AI response");
         }
 
@@ -237,6 +266,26 @@ export default function TrainingChatPage() {
 
       {/* Chat Area */}
       <main className="flex-1 overflow-y-auto p-8 space-y-8 relative z-0 scroll-smooth">
+        {profileGate && !profileGate.complete ? (
+          <div className="max-w-xl mx-auto mt-16 bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 text-center shadow-xl">
+            <h3 className="text-xl font-bold text-white mb-3">Finish setup before training</h3>
+            <p className="text-sm text-zinc-400 leading-relaxed mb-8">
+              The AI Training Sandbox calibrates a twin that already has an identity and behavior profile.
+              Complete onboarding first — this screen will not send messages until those steps are done.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {profileGate.missingIdentity ? (
+                <Link href="/setup/identity">
+                  <Button className="font-bold px-6">Set up AI identity</Button>
+                </Link>
+              ) : (
+                <Link href="/setup/behavior">
+                  <Button className="font-bold px-6">Complete behavior profile</Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        ) : (
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="flex justify-center py-4">
             <div className="px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
@@ -303,6 +352,7 @@ export default function TrainingChatPage() {
           )}
           <div ref={messagesEndRef} className="h-4" />
         </div>
+        )}
       </main>
 
       {/* Input Area */}
@@ -315,7 +365,8 @@ export default function TrainingChatPage() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Test a conversation with your AI twin..."
+            placeholder={profileGate?.complete === false ? "Complete onboarding to start training..." : "Test a conversation with your AI twin..."}
+            disabled={profileGate?.complete === false}
             className="w-full h-16 bg-zinc-900 border border-zinc-800 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 text-white rounded-2xl pl-6 pr-20 text-sm transition-all outline-none placeholder:text-zinc-600 shadow-2xl"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -323,11 +374,11 @@ export default function TrainingChatPage() {
               type="submit" 
               className={cn(
                 "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
-                !inputValue.trim() || isTyping || !conversationId
+                !inputValue.trim() || isTyping || !conversationId || profileGate?.complete === false
                   ? "bg-zinc-800 text-zinc-600 cursor-not-allowed"
                   : "bg-violet-600 text-white shadow-lg shadow-violet-600/20 hover:scale-105 active:scale-95"
               )}
-              disabled={!inputValue.trim() || isTyping || !conversationId}
+              disabled={!inputValue.trim() || isTyping || !conversationId || profileGate?.complete === false}
             >
               <Send size={18} className={cn("transition-transform", inputValue.trim() && "rotate-12 translate-x-0.5")} />
             </button>

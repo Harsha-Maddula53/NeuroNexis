@@ -99,7 +99,7 @@ export default function BehaviorEditorPage() {
             transition={{ delay: 0.2 }}
             className="text-[var(--text-secondary)] mt-4 text-sm leading-relaxed max-w-2xl"
           >
-            Configure your AI's personality, conversational style, and personal information.
+            Configure your AI&apos;s personality, conversational style, and personal information.
           </motion.p>
         </header>
 
@@ -303,7 +303,7 @@ export default function BehaviorEditorPage() {
                     <option value="Single">Single</option>
                     <option value="In a relationship">In a Relationship</option>
                     <option value="Married">Married</option>
-                    <option value="It's complicated">It's complicated</option>
+                    <option value="It's complicated">It&apos;s complicated</option>
                   </select>
                 </div>
              </section>

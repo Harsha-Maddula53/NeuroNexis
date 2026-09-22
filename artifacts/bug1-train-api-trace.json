@@ -1,0 +1,21 @@
+{
+  "getStatus": 200,
+  "getJson": {
+    "conversationId": "cmtsdbb3c0002ddd4wupid5cm",
+    "profileComplete": false,
+    "missing": {
+      "aiIdentity": true,
+      "behaviorProfile": true
+    },
+    "messages": [
+      {
+        "id": "cmtsdbc7b0004ddd4p0qcdri7",
+        "sender": "user",
+        "text": "Hello AI twin",
+        "timestamp": "2026-09-08T07:48:34.824Z"
+      }
+    ]
+  },
+  "postStatus": 400,
+  "postText": "{\"error\":\"Profile incomplete\",\"missing\":{\"aiIdentity\":true,\"behaviorProfile\":true},\"setupPath\":\"/setup/identity\"}"
+}

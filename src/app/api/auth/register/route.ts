@@ -6,7 +6,7 @@ import { buildRateLimitHeaders, checkRateLimit, getClientIp } from "@/lib/rate-l
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`register:${ip}`, { limit: 8, windowMs: 10 * 60_000 });
+    const rate = await checkRateLimit(`register:${ip}`, { limit: 8, windowMs: 10 * 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again later." },

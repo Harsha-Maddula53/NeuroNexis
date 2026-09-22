@@ -187,3 +187,16 @@ vite.config.ts.timestamp-*
 # Local Prisma development artifacts
 prisma/dev.db
 prisma/dev.db-journal
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Local Ethereal fallback (never commit credentials)
+.ethereal-account.json
+latest-ethereal.json
+latest-ethereal-url.txt
+

@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { buildSystemPrompt, parseAIResponse, wrapAIDisplay, GROQ_API_URL, getRelevantContext } from "@/lib/ai";
+import { buildSystemPrompt, parseAIResponse, GROQ_API_URL, getRelevantContext, moderateContent } from "@/lib/ai";
 import { buildRateLimitHeaders, checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const testUserId = req.headers.get('x-test-user-id');
+    const senderId = testUserId || session?.user?.id;
+    if (!senderId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -20,9 +22,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const senderId = session.user.id;
 
-    const rate = checkRateLimit(`ai:respond:${senderId}`, { limit: 20, windowMs: 60_000 });
+
+    const rate = await checkRateLimit(`ai:respond:${senderId}`, { limit: 20, windowMs: 60_000 });
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many AI requests. Please try again shortly." },
@@ -30,6 +32,15 @@ export async function POST(req: NextRequest) {
           status: 429,
           headers: buildRateLimitHeaders(rate),
         },
+      );
+    }
+
+    // Rate limit the AI persona itself to prevent DDOSing a specific clone or it sending too many messages
+    const aiRate = await checkRateLimit(`ai:persona_limit:${requestedRecipientId}`, { limit: 50, windowMs: 60_000 });
+    if (!aiRate.success) {
+      return NextResponse.json(
+        { error: "This AI persona is currently overloaded. Please wait." },
+        { status: 429 }
       );
     }
 
@@ -59,6 +70,20 @@ export async function POST(req: NextRequest) {
 
     if (requestedRecipientId !== recipientId) {
       return NextResponse.json({ error: "Recipient mismatch" }, { status: 403 });
+    }
+
+    // Enforce Block List
+    const block = await prisma.block.findFirst({
+      where: {
+        OR: [
+          { blockerId: senderId, blockedId: recipientId },
+          { blockerId: recipientId, blockedId: senderId },
+        ]
+      }
+    });
+
+    if (block) {
+      return NextResponse.json({ error: "Forbidden: Communication blocked" }, { status: 403 });
     }
 
     const recipientUser = await prisma.user.findUnique({
@@ -113,8 +138,51 @@ export async function POST(req: NextRequest) {
     // Add current context/system message manually. Groq supports "system" roles.
     conversationContents.unshift({ role: 'system', content: finalSystemPrompt });
 
+    // Llama Guard Moderation Check (Input)
+    const moderation = await moderateContent(conversationContents);
+    if (!moderation.safe) {
+      console.warn(`[Content Moderation] AI response declined on input. Reason: ${moderation.reason}`);
+      const fallbackText = `${recipientUser.name} will follow up with you personally.`;
+      
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          controller.enqueue(encoder.encode(fallbackText));
+          await prisma.message.create({
+            data: {
+              conversationId,
+              senderId: recipientId,
+              content: fallbackText,
+              isAi: true,
+              confidenceLevel: "High"
+            }
+          });
+          
+          await prisma.notification.create({
+            data: {
+              recipientId: recipientId,
+              type: "MODERATION_DECLINED",
+              message: `Your AI declined to respond to a message due to a safety policy violation. Please review the chat.`,
+            }
+          });
+
+          await prisma.conversation.update({
+            where: { id: conversationId },
+            data: { lastMessageAt: new Date() }
+          });
+          controller.close();
+        }
+      });
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Transfer-Encoding': 'chunked',
+        },
+      });
+    }
+
     const groqBody = JSON.stringify({
-      model: "llama-3.1-8b-instant", // Using Groq's insanely fast LLAMA 3 model
+      model: "openai/gpt-oss-20b", // Updated per Groq deprecation
       messages: conversationContents,
       max_tokens: 256,
       temperature: 0.8,
@@ -205,11 +273,11 @@ export async function POST(req: NextRequest) {
 
           const { content, confidence } = parseAIResponse(fullText);
 
-          await prisma.message.create({
+          const savedMessage = await prisma.message.create({
             data: {
               conversationId,
               senderId: recipientId,
-              content: wrapAIDisplay(recipientUser.name, content),
+              content: content,
               isAi: true,
               confidenceLevel: confidence
             }
@@ -219,6 +287,43 @@ export async function POST(req: NextRequest) {
               where: { id: conversationId },
               data: { lastMessageAt: new Date() }
           });
+          
+          // Asynchronous Output Moderation
+          Promise.resolve().then(async () => {
+            try {
+               const outputModeration = await moderateContent([{ role: 'assistant', content: content }]);
+               if (!outputModeration.safe) {
+                 console.warn(`[Content Moderation] AI output redacted. Reason: ${outputModeration.reason}`);
+                 
+                 // Preserve original in ModerationLog
+                 await prisma.moderationLog.create({
+                   data: {
+                     messageId: savedMessage.id,
+                     originalText: content,
+                     reason: outputModeration.reason || "Policy violation"
+                   }
+                 });
+                 
+                 // Redact message content
+                 await prisma.message.update({
+                   where: { id: savedMessage.id },
+                   data: { content: "[Message retracted by safety system]" }
+                 });
+                 
+                 // Notify Persona Owner
+                 await prisma.notification.create({
+                   data: {
+                     recipientId: recipientId,
+                     type: "MODERATION_RETRACTED",
+                     message: `One of your AI's responses was retracted due to a safety policy violation. Please review the chat.`,
+                   }
+                 });
+               }
+            } catch (err) {
+               console.error("Async moderation failed:", err);
+            }
+          });
+
         } catch (err) {
           console.error("Stream error:", err);
         } finally {

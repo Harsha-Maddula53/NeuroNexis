@@ -8,21 +8,23 @@
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/rate-limit.test.ts",
+    "test": "tsx --test src/lib/rate-limit.test.ts src/lib/rate-limit.redis.test.ts",
     "clean": "if exist .next rmdir /s /q .next",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.19.3",
+    "@sentry/nextjs": "^10.69.0",
+    "@upstash/redis": "^1.38.2",
     "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
     "next": "^15.5.15",
     "next-auth": "^4.24.14",
+    "nodemailer": "^7.0.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.6.0",
@@ -30,17 +32,23 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.19.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.38.0",
     "eslint-config-next": "^15.5.15",
+    "pg": "^8.23.0",
     "postcss": "^8.4.49",
     "prisma": "^6.19.3",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

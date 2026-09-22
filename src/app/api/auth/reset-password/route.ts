@@ -7,7 +7,7 @@ import { buildRateLimitHeaders, checkRateLimit, getClientIp } from "@/lib/rate-l
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`reset-password:${ip}`, {
+    const rate = await checkRateLimit(`reset-password:${ip}`, {
       limit: 8,
       windowMs: 15 * 60_000,
     });
